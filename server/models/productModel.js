@@ -35,7 +35,8 @@ exports.getProductDetailsById = async (productId) => {
 exports.createProduct = async (name, price, description) => {
   try {
     const query = 'INSERT INTO product (name, price, description) VALUES (?, ?, ?);';
-    return await executeQuery(query, [name, price, description]);
+    const result = await executeQuery(query, [name, price, description]);
+    return { productId: result.insertId }; // result.insertId berisi ID produk baru
   } catch (error) {
     throw error;
   }
