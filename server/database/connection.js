@@ -1,32 +1,47 @@
-const mysql2 = require('mysql2');
-require('dotenv').config();
+const mysql = require("mysql2/promise"); // Use promise-based mysql2
+require('dotenv').config(); // Load environment variables from .env file
 
 let connectionParams;
 
-const uselocalhost = process.env.USE_LOCALHOST === 'true';
+// Use flag to toggle between localhost and server configurations
+const useLocalhost = process.env.USE_LOCALHOST === 'true';
 
-if (uselocalhost) {
-  console.log('Inside local')
-  connectionParams = {
-    user: 'root',
-    host: 'localhost',
-    password: 'root123',
-    database: 'market' 
-  };
-} else {
+if (useLocalhost) {
+    console.log("Using local database configuration...");
     connectionParams = {
-      user: process.env.DB_SERVER_USER,
-      host: process.env.DB_SERVER_HOST,
-      password: process.env.DB_SERVER_PASSWORD,
-      database: process.env.DB_SERVER_DATABASE,
+        user: "root",
+        host: "localhost",
+        password: "",
+        database: "market",
+    };
+} else {
+    console.log("Using server database configuration...");
+    connectionParams = {
+        user: process.env.DB_SERVER_USER,
+        host: process.env.DB_SERVER_HOST,
+        password: process.env.DB_SERVER_PASSWORD,
+        database: process.env.DB_SERVER_DATABASE,
     };
 }
 
-const pool = mysql2.createPool(connectionParams);
-
-pool.connect((err) => {
-  if (err) console.log (err.message);
-  else console.log('DB Connection Done');
+// Create a connection pool
+const pool = mysql.createPool({
+    ...connectionParams,
+    waitForConnections: true,
+    connectionLimit: 10, // Adjust based on your needs
+    queueLimit: 0,
 });
 
-module.exports = pool; 
+// Test the connection
+(async () => {
+    try {
+        const connection = await pool.getConnection();
+        console.log("DB Connection Done");
+        connection.release(); // Release the connection back to the pool
+    } catch (err) {
+        console.error("DB Connection Error:", err.message);
+    }
+})();
+
+// Export the pool
+module.exports = pool;
