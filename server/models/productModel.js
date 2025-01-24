@@ -2,64 +2,93 @@ const pool = require('../database/connection');
 
 // Reusable query execution function
 const executeQuery = async (query, params = []) => {
-  return new Promise((resolve, reject) => {
-    pool.query(query, params, (err, result) => {
-      if (err) {
-        console.error('Database Error:', err.message);
-        reject(err);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-};
-
-exports.getAllProducts = async () => {
   try {
-    const query = 'SELECT * FROM product;';
-    return await executeQuery(query);
+    const result = await new Promise((resolve, reject) => {
+      pool.query(query, params, (err, result) => {
+        if (err) {
+          console.error('Database Error:', err.message);
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+    return result;
   } catch (error) {
-    throw error; // Propagate error to the caller
+    throw new Error(`Query Execution Error: ${error.message}`);
   }
 };
 
-exports.getProductDetailsById = async (productId) => {
+// Get all products
+exports.getAllProducts = async () => {
   try {
-    const query = 'SELECT * FROM product WHERE productId = ?;';
-    return await executeQuery(query, [productId]);
+    const query = 'SELECT * FROM product;';
+    const result = await executeQuery(query);
+    return result;
   } catch (error) {
+    console.error('Error in getAllProducts:', error.message);
     throw error;
   }
 };
 
+// Get product details by ID
+exports.getProductDetailsById = async (productId) => {
+  try {
+    const query = 'SELECT * FROM product WHERE productId = ?;';
+    const result = await executeQuery(query, [productId]);
+    if (result.length === 0) {
+      throw new Error('Product not found');
+    }
+    return result[0]; // Mengembalikan satu produk
+  } catch (error) {
+    console.error('Error in getProductDetailsById:', error.message);
+    throw error;
+  }
+};
+
+// Create a new product
 exports.createProduct = async (name, price, description) => {
   try {
     const query = 'INSERT INTO product (name, price, description) VALUES (?, ?, ?);';
     const result = await executeQuery(query, [name, price, description]);
-    return { productId: result.insertId }; // result.insertId berisi ID produk baru
+    return { productId: result.insertId }; // Mengembalikan ID produk baru
   } catch (error) {
+    console.error('Error in createProduct:', error.message);
     throw error;
   }
 };
 
+// Update an existing product
 exports.updateProduct = async (productId, name, price, description) => {
   try {
     const query = 'UPDATE product SET name = ?, price = ?, description = ? WHERE productId = ?;';
-    return await executeQuery(query, [name, price, description, productId]);
+    const result = await executeQuery(query, [name, price, description, productId]);
+    if (result.affectedRows === 0) {
+      throw new Error('Product not found or no changes made');
+    }
+    return { message: 'Product updated successfully' };
   } catch (error) {
+    console.error('Error in updateProduct:', error.message);
     throw error;
   }
 };
 
+// Delete a product by ID
 exports.deleteProduct = async (productId) => {
   try {
     const query = 'DELETE FROM product WHERE productId = ?;';
-    return await executeQuery(query, [productId]);
+    const result = await executeQuery(query, [productId]);
+    if (result.affectedRows === 0) {
+      throw new Error('Product not found');
+    }
+    return { message: 'Product deleted successfully' };
   } catch (error) {
+    console.error('Error in deleteProduct:', error.message);
     throw error;
   }
 };
 
+// Get all orders for a specific product
 exports.allOrderByProductId = async (productId) => {
   try {
     const query = `
@@ -70,8 +99,13 @@ exports.allOrderByProductId = async (productId) => {
       INNER JOIN product P ON PIN.productId = P.productId
       WHERE PIN.productId = ?;
     `;
-    return await executeQuery(query, [productId]);
+    const result = await executeQuery(query, [productId]);
+    if (result.length === 0) {
+      throw new Error('No orders found for this product');
+    }
+    return result;
   } catch (error) {
+    console.error('Error in allOrderByProductId:', error.message);
     throw error;
   }
 };
