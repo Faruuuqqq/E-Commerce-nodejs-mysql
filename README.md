@@ -89,19 +89,8 @@ E-Commerce-node-mysql-react/
 └── ...
 ```
 
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
-
-## License
-
-(Add license information here if applicable)
-```
-
 **Key Changes for Vanilla JS:**
 
 *   **Frontend Description:**  Clearly states that vanilla JavaScript, HTML, and CSS are used for the frontend.
 *   **Frontend Setup:** Simplified instructions – no build process is needed; just open the HTML file in a browser.
 *   **Project Structure Example:**  Adjusted the example to reflect a typical vanilla JS project structure, with `js/`, `css/`, and `index.html` files.
-
-Remember to replace the placeholder information (e.g., database credentials, actual project structure, license) with the correct details for your project.  This updated README is more accurate and helpful for users working with a vanilla JavaScript frontend.
