@@ -21,7 +21,7 @@ This project is a full-stack e-commerce web application built using Node.js, MyS
 1.  **Clone the repository:**
 
     ```bash
-    git clone [invalid URL removed]
+    git clone 
     ```
 
 2.  **Navigate to the project directory:**
@@ -88,9 +88,3 @@ E-Commerce-node-mysql-react/
 ├── README.md
 └── ...
 ```
-
-**Key Changes for Vanilla JS:**
-
-*   **Frontend Description:**  Clearly states that vanilla JavaScript, HTML, and CSS are used for the frontend.
-*   **Frontend Setup:** Simplified instructions – no build process is needed; just open the HTML file in a browser.
-*   **Project Structure Example:**  Adjusted the example to reflect a typical vanilla JS project structure, with `js/`, `css/`, and `index.html` files.
