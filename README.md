@@ -8,3 +8,44 @@ This project is a full-stack e-commerce web application built using Node.js, MyS
 *   **Frontend:** Vanilla JavaScript, HTML, CSS
 *   **Backend:** Node.js
 *   **Database:** MySQL
+
+## Features (Based on Repository Overview)
+
+*   **Product Listing:** Displays products with details like name, description, price, and images.
+*   **Shopping Cart:** Allows users to add and manage items in their cart.
+*   **User Authentication:** Enables users to register, log in, and manage their accounts.
+*   **(Potentially) Order Management:** The repository structure suggests order-related files, indicating potential functionality for order placement and tracking. Further review of the code is needed to confirm the extent of this feature.
+
+## Setup and Installation
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone [invalid URL removed]
+    ```
+
+2.  **Navigate to the project directory:**
+
+    ```bash
+    cd E-Commerce-node-mysql-react
+    ```
+
+3.  **Backend Setup (Node.js):**
+
+    *   Navigate to the backend directory (if separate).
+    *   Install dependencies:
+
+        ```bash
+        npm install  # or yarn install
+        ```
+
+    *   Configure the database connection:
+        *   Create a MySQL database.
+        *   Update the database credentials (host, username, password, database name) in the appropriate configuration file (e.g., a `.env` file or within the code itself).
+        *   Run database migrations or seed the database (if applicable). The repository may contain SQL scripts for this purpose.
+
+    *   Start the backend server:
+
+        ```bash
+        npm start  # or yarn start, or node server.js, etc. - check the package.json scripts
+        ```
