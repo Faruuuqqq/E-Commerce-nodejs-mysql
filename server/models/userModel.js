@@ -106,3 +106,15 @@ exports.changePassword = async (email, oldPassword, newPassword) => {
     throw error;
   }
 };
+
+exports.getUserById = async(userId) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT userId, email, isAdmin, fname, lname, FROM users WHERE userId = ?',
+      [userId]
+    );
+    return rows[0];
+  } catch (error) {
+    throw error;
+  }
+}
