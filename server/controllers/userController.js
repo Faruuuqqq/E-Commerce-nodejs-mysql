@@ -1,4 +1,5 @@
 const userModel = require('../models/userModel');
+const jwt = require("jsonwebtoken");
 
 // User registration
 exports.register = async (req, res) => {
@@ -11,7 +12,8 @@ exports.register = async (req, res) => {
   try {
     const result = await userModel.register(email, password, isAdmin, fname, lname);
     console.log('User registered successfully');
-    res.status(201).json({ message: "Registration successful", result });
+    // res.status(201).json({ message: "Registration successful", result });
+    res.redirect('/users/login')
   } catch (error) {
     console.error('Error registering user:', error.message);
     res.status(500).json({ error: "Internal Server Error" });
@@ -22,21 +24,33 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
-  // Validate input
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
   try {
+    // Ambil data user dari userModel
     const result = await userModel.login(email, password);
-    res.status(200).json(result);
-  } catch (error) {
-    console.error('Error logging in:', error.message);
-    if (error.message === "Invalid email or password") {
-      res.status(401).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: "Internal Server Error" });
+    
+    if (!result) {
+      return res.status(401).json({ error: "Invalid email or password" });
     }
+
+    // Buat token JWT
+    const token = jwt.sign(
+      { userId: result.userId, isAdmin: result.isAdmin },
+      "secret-key",
+      { expiresIn: "1h" }
+    );
+
+    // Simpan token di cookies
+    res.cookie("token", token, { httpOnly: true, secure: false });
+
+    // Redirect ke home setelah login sukses
+    res.redirect("/home");
+  } catch (error) {
+    console.error("Error logging in:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -45,11 +59,18 @@ exports.changePassword = async (req, res) => {
 
   try {
       const result = await userModel.changePassword(email, oldPassword, newPassword);
-      
+
       console.log("Password changed successfully");
-      res.status(200).json({ message: "Password changed successfully" });
-  } catch (error) {
+      // res.status(200).json({ message: "Password changed successfully" });
+      res.redirect("/users/login");
+    } catch (error) {
       console.error("Error changing password:", error.message);
       res.status(400).json({ error: error.message });
   }
 };
+
+// exports.logout = (req, res) => {
+//   req.session.destroy(() => {
+//     res.redirect('/users/login');
+//   })
+// }
