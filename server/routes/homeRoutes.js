@@ -6,30 +6,26 @@ const jwt = require('jsonwebtoken');
 
 // middleware to get user from JWT token
 const authenticateUser = async (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+      return res.status(401).json({ error: "Authentication error: No token provided" });
+  }
+
   try {
-      const token = req.cookies.token || req.headers.authorization?.split(" ")[1]; // check token, on cookies or headeer
-      if (!token) {
-          return res.redirect("/users/login");
-      }
-
       const decoded = jwt.verify(token, "secret-key");
-      const user = await userModel.getUserById(decoded.userId);
-      if (!user) {
-          return res.redirect("/users/login");
-      }
-
-      req.user = user;
+      req.user = decoded;
       next();
   } catch (error) {
-      console.error("Authentication error:", error);
-      return res.redirect("/users/login");
+      return res.status(401).json({ error: "Invalid token" });
   }
 };
 
+
 router.get("/home", authenticateUser, async (req, res) => {
   try {
-    const products = await productModel.getAllProducts();
-    res.sender("home", { user: req.user, products });
+    // const products = await productModel.getAllProducts();
+    res.render("home", { user: req.user });
   } catch (error) {
     console.error("Error rendering homepage:", error);
     res.status(500).send("internal server error");
