@@ -1,26 +1,26 @@
-const userModel = require('../models/userModel');
+const userModel = require("../models/userModel");
+const { generateAccessAndRefreshToken } = require("../utils/token");
 const jwt = require("jsonwebtoken");
 
-// User registration
+// User Registration
 exports.register = async (req, res) => {
   const { email, password, isAdmin, fname, lname } = req.body;
 
-// Validate input
   if (!email || !password || !fname || !lname) {
     return res.status(400).json({ error: "Email, password, first name, and last name are required" });
   }
+
   try {
-    const result = await userModel.register(email, password, isAdmin, fname, lname);
-    console.log('User registered successfully');
-    // res.status(201).json({ message: "Registration successful", result });
-    res.redirect('/users/login')
+    await userModel.register(email, password, isAdmin, fname, lname);
+    console.log("User registered successfully");
+    res.redirect("/users/login"); // Redirect ke halaman login setelah registrasi
   } catch (error) {
-    console.error('Error registering user:', error.message);
+    console.error("Error registering user:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-// User login
+// User Login
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -29,48 +29,43 @@ exports.login = async (req, res) => {
   }
 
   try {
-    // Ambil data user dari userModel
-    const result = await userModel.login(email, password);
-    
-    if (!result) {
+    const user = await userModel.login(email, password);
+    if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Buat token JWT
-    const token = jwt.sign(
-      { userId: result.userId, isAdmin: result.isAdmin },
-      "secret-key",
-      { expiresIn: "1h" }
-    );
+    // Generate Access & Refresh Tokens
+    const { token, refreshToken } = generateAccessAndRefreshToken({
+      userId: user.userId,
+      isAdmin: user.isAdmin,
+    });
 
-    // Simpan token di cookies
-    res.cookie("token", token, { httpOnly: true, secure: false });
-
-    // Redirect ke home setelah login sukses
-    res.redirect("/home");
+    // // (optional) store token in cookies
+    // res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: false });
+    // res.redirect("/home");
+    res.status(200).json({ token })
   } catch (error) {
     console.error("Error logging in:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
+// Change Password
 exports.changePassword = async (req, res) => {
   const { email, oldPassword, newPassword } = req.body;
 
   try {
-      const result = await userModel.changePassword(email, oldPassword, newPassword);
-
-      console.log("Password changed successfully");
-      // res.status(200).json({ message: "Password changed successfully" });
-      res.redirect("/users/login");
-    } catch (error) {
-      console.error("Error changing password:", error.message);
-      res.status(400).json({ error: error.message });
+    await userModel.changePassword(email, oldPassword, newPassword);
+    console.log("Password changed successfully");
+    res.redirect("/users/login"); // Redirect ke halaman login setelah ganti password
+  } catch (error) {
+    console.error("Error changing password:", error.message);
+    res.status(400).json({ error: error.message });
   }
 };
 
-// exports.logout = (req, res) => {
-//   req.session.destroy(() => {
-//     res.redirect('/users/login');
-//   })
-// }
+// User Logout
+exports.logout = (req, res) => {
+  res.clearCookie("refreshToken"); // Hapus refresh token dari cookie
+  res.redirect("/users/login"); // Redirect ke halaman login
+};
