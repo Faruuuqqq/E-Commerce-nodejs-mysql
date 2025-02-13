@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Tambahkan CSS -->
+</head>
+<body>
+    <h1>Your Shopping Cart</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (cartItems.length === 0) { %>
+                <tr><td colspan="4">Your cart is empty.</td></tr>
+            <% } else { %>
+                <% cartItems.forEach(item => { %>
+                    <tr>
+                        <td><%= item.name %></td>
+                        <td>$<%= item.price %></td>
+                        <td><%= item.quantity %></td>
+                        <td>
+                            <form action="/cart/remove/<%= item.productId %>" method="POST">
+                                <button type="submit">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% } %>
+        </tbody>
+    </table>
+    <a href="/">Continue Shopping</a>
+    <form action="/cart/buy" method="POST">
+        <input type="text" name="address" placeholder="Enter your address" required>
+        <button type="submit">Checkout</button>
+    </form>
+</body>
+</html>
