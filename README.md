@@ -1,90 +1,133 @@
-
 # E-Commerce Web Application
 
-This project is a full-stack e-commerce web application built using Node.js, MySQL, and vanilla JavaScript for the frontend. It provides a foundation for building a complete online store, including product browsing, shopping cart functionality, user authentication, and potentially order management (depending on the implementation details).
+This project is a full-stack e-commerce web application built using **Node.js, MySQL, EJS, and Bootstrap**. It provides essential functionalities for an online store, including product browsing, a shopping cart, user authentication, and order management.
 
 ## Technologies Used
 
-*   **Frontend:** Vanilla JavaScript, HTML, CSS
-*   **Backend:** Node.js
-*   **Database:** MySQL
+* **Frontend:** EJS (Embedded JavaScript), Bootstrap, HTML, CSS
+* **Backend:** Node.js (Express.js)
+* **Database:** MySQL
+* **Authentication:** JWT (JSON Web Token)
 
-## Features (Based on Repository Overview)
+## Features
 
-*   **Product Listing:** Displays products with details like name, description, price, and images.
-*   **Shopping Cart:** Allows users to add and manage items in their cart.
-*   **User Authentication:** Enables users to register, log in, and manage their accounts.
-*   **(Potentially) Order Management:** The repository structure suggests order-related files, indicating potential functionality for order placement and tracking. Further review of the code is needed to confirm the extent of this feature.
+* **Product Listing:** Users can browse products with details such as name, description, price, and images.
+* **Shopping Cart:** Users can add, update, and remove items in their cart.
+* **User Authentication:** Secure user authentication using JWT, allowing users to register, log in, and manage their accounts.
+* **Order Management:** Users can place orders and view order history.
+* **Admin Panel (Planned):** Admins can manage products, view orders, and manage users (future enhancement).
 
 ## Setup and Installation
 
-1.  **Clone the repository:**
+### 1. Clone the repository
+```bash
+git clone <repository_url>
+```
 
-    ```bash
-    git clone 
-    ```
+### 2. Navigate to the project directory
+```bash
+cd e-commerce-node-mysql
+```
 
-2.  **Navigate to the project directory:**
+### 3. Backend Setup (Node.js)
 
-    ```bash
-    cd E-Commerce-node-mysql-react
-    ```
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-3.  **Backend Setup (Node.js):**
+2. **Configure the database connection:**
+   * Create a MySQL database.
+   * Update the database credentials in the `.env` file:
+   ```
+   DB_HOST=your_host
+   DB_USER=your_username
+   DB_PASSWORD=your_password
+   DB_NAME=your_database
+   JWT_SECRET_KEY_ACCESS_TOKEN=your_secret_key
+   JWT_SECRET_KEY_REFRESH_TOKEN=your_secret_key
+   ```
 
-    *   Navigate to the backend directory (if separate).
-    *   Install dependencies:
+3. **Start the backend server:**
+   ```bash
+   npm start
+   ```
 
-        ```bash
-        npm install  # or yarn install
-        ```
+### 4. Frontend Setup (EJS + Bootstrap)
 
-    *   Configure the database connection:
-        *   Create a MySQL database.
-        *   Update the database credentials (host, username, password, database name) in the appropriate configuration file (e.g., a `.env` file or within the code itself).
-        *   Run database migrations or seed the database (if applicable). The repository may contain SQL scripts for this purpose.
+Since we use EJS for templating, no separate frontend build process is required. Ensure that the server is running, then open your browser and navigate to:
+```
+http://localhost:3000
+```
 
-    *   Start the backend server:
-
-        ```bash
-        npm start  # or yarn start, or node server.js, etc. - check the package.json scripts
-        ```
-4.  **Frontend Setup (Vanilla JavaScript):**
-
-    *   Navigate to the frontend directory (if separate).
-    *   Open the `index.html` file (or the main HTML file) in your web browser.  No build process is typically required for vanilla JS projects.
-
-5.  **Configuration:**
-    *   Ensure that the JavaScript code in the frontend is configured to communicate with the backend API. This usually involves setting the correct API endpoint URL in the JavaScript files.
-
-## Project Structure (Example - Adapt to Actual Structure)
+## Project Structure
 
 ```
-E-Commerce-node-mysql-react/
-├── client/         # Vanilla JavaScript frontend
-│   ├── js/
-│   │   ├── script.js  # Main JavaScript file
+e-commerce-node-mysql/
+├── views/            # EJS templates
+│   ├── pages/
+│   │   ├── home.ejs
+│   │   ├── login.ejs
+│   │   ├── register.ejs
+│   │   ├── cart.ejs
+│   │   ├── orders.ejs
+│   │   ├── product-details.ejs
 │   │   ├── ...
+│   ├── partials/
+│   │   ├── header.ejs
+│   │   ├── footer.ejs
+│   ├── layouts.ejs
+│   └── ...
+├── public/           # Static files (CSS, JS, images)
 │   ├── css/
-│   │   ├── style.css
-│   │   ├── ...
-│   ├── index.html
-│   └── ...
-├── server/         # Node.js backend
-│   ├── routes/
-│   │   ├── productRoutes.js
-│   │   ├── userRoutes.js
-│   │   └── ...
-│   ├── models/
-│   │   ├── Product.js
-│   │   ├── User.js
-│   │   └── ...
-│   ├── config/
-│   │   └── db.js  # Database configuration
-│   ├── app.js      # Main server file
-│   ├── package.json
-│   └── ...
-├── .gitignore
-├── README.md
-└── ...
+│   │   ├── styles.css
+│   ├── js/
+│   │   ├── script.js
+│   ├── images/
+├── routes/           # Express routes
+│   ├── productRoutes.js
+│   ├── userRoutes.js
+│   ├── cartRoutes.js
+│   ├── orderRoutes.js
+├── controllers/      # Controllers
+│   ├── productController.js
+│   ├── userController.js
+│   ├── cartController.js
+│   ├── orderController.js
+├── models/          # Database models
+│   ├── Product.js
+│   ├── User.js
+│   ├── Order.js
+│   ├── Cart.js
+├── middleware/       # Authentication and other middleware
+│   ├── authenticateUser.js
+├── config/
+│   ├── db.js         # Database connection
+├── app.js            # Main server file
+├── package.json
+├── .env              # Environment variables
+└── README.md
 ```
+
+## API Endpoints
+
+| Endpoint             | Method | Description |
+|----------------------|--------|-------------|
+| `/`                  | GET    | Home page |
+| `/products`          | GET    | Get all products |
+| `/product/:id`       | GET    | Get product details |
+| `/cart`              | GET    | View cart |
+| `/cart/add/:id`      | POST   | Add product to cart |
+| `/cart/remove/:id`   | DELETE | Remove product from cart |
+| `/users/register`    | POST   | User registration |
+| `/users/login`       | POST   | User login (JWT) |
+| `/orders`            | GET    | View user orders |
+| `/orders/place`      | POST   | Place an order |
+
+## Future Enhancements
+* **Admin Panel:** Product and order management.
+* **Payment Integration:** Simulated checkout flow.
+* **Product Search and Filtering.**
+
+This project is actively being developed. Contributions and suggestions are welcome!
+
