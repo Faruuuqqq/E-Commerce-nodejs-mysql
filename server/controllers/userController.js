@@ -1,5 +1,5 @@
 const userModel = require("../models/userModel");
-const { generateAccessAndRefreshToken } = require("../utils/token");
+const { generateTokens } = require("../utils/token");
 const jwt = require("jsonwebtoken");
 
 // User Registration
@@ -29,26 +29,30 @@ exports.login = async (req, res) => {
   }
 
   try {
-    const user = await userModel.login(email, password);
-    if (!user) {
+    const result = await userModel.login(email, password);
+
+    if (!result) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Generate Access & Refresh Tokens
-    const { token, refreshToken } = generateAccessAndRefreshToken({
-      userId: user.userId,
-      isAdmin: user.isAdmin,
-    });
+    console.log("Login berhasil, user:", result);
 
-    // // (optional) store token in cookies
-    // res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: false });
-    // res.redirect("/home");
-    res.status(200).json({ token })
+    // Generate token
+    const { accessToken } = generateTokens({ userId: result.userId, isAdmin: result.isAdmin });
+
+    console.log("Token yang dihasilkan:", accessToken );
+
+    // Simpan token di cookie
+    res.cookie("token", accessToken, { httpOnly: true, secure: true, sameSite: "Strict" });
+
+    // Kirim token ke client
+    res.json({ accessToken });
   } catch (error) {
     console.error("Error logging in:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 // Change Password
 exports.changePassword = async (req, res) => {
@@ -66,6 +70,7 @@ exports.changePassword = async (req, res) => {
 
 // User Logout
 exports.logout = (req, res) => {
+  res.clearCookie("token"); // Hapus access token dari cookie
   res.clearCookie("refreshToken"); // Hapus refresh token dari cookie
-  res.redirect("/users/login"); // Redirect ke halaman login
+  res.json({ message: "Logout successful" });
 };

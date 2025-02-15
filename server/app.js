@@ -10,7 +10,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 //const userToken = require("./routes/userTokenRoute")
 const homeRoutes = require("./routes/homeRoutes");
-
+require('dotenv').config();
 const app = express();
 
 // Middleware

@@ -11,7 +11,7 @@ router.get("/register", (req, res) => {
 } )
 
 // Route for user login
-router.post("/login", authenticateUser, userController.login);
+router.post("/login", userController.login);
 router.get("/login", (req, res) => {
   res.render('auth/login');
 })

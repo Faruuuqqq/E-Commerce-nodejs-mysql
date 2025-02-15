@@ -6,6 +6,7 @@ exports.getAllProducts = async (req, res) => {
     try {
         const products = await productModel.getAllProducts();
         res.json(products);
+        res.render("index", { products });
     } catch (error) {
         console.error("error: cannot fetching all products")
         res.status(500).json({error: 'internal server error'});
