@@ -18,22 +18,43 @@
             </tr>
         </thead>
         <tbody>
-            <% if (cartItems.length === 0) { %>
-                <tr><td colspan="4">Your cart is empty.</td></tr>
+            <% if (cartItems && cartItems.length > 0) { %>
+                <table class="table mt-4">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% let totalPrice = 0; %>
+                        <% cartItems.forEach(item => { %>
+                            <% totalPrice += item.price * item.quantity; %>
+                            <tr>
+                                <td><%= item.name %></td>
+                                <td>$<%= item.price %></td>
+                                <td><%= item.quantity %></td>
+                                <td>$<%= item.price * item.quantity %></td>
+                                <td>
+                                    <a href="/cart/remove/<%= item.productId %>" class="btn btn-danger">Remove</a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            
+                <h3 class="fw-bold text-end">Total: $<%= totalPrice %></h3>
+            
+                <div class="text-end">
+                    <a href="/cart/clear" class="btn btn-outline-danger">Clear Cart</a>
+                    <a href="/checkout" class="btn btn-success">Proceed to Checkout</a>
+                </div>
             <% } else { %>
-                <% cartItems.forEach(item => { %>
-                    <tr>
-                        <td><%= item.name %></td>
-                        <td>$<%= item.price %></td>
-                        <td><%= item.quantity %></td>
-                        <td>
-                            <form action="/cart/remove/<%= item.productId %>" method="POST">
-                                <button type="submit">Remove</button>
-                            </form>
-                        </td>
-                    </tr>
-                <% }) %>
-            <% } %>
+                <p class="text-center mt-4">Your cart is empty.</p>
+            <% } %>            
         </tbody>
     </table>
     <a href="/">Continue Shopping</a>
