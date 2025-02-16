@@ -51,11 +51,11 @@ exports.removeFromCart = async (productId, userId) => {
 };
 
 exports.buy = async (customerId, address) => {
-  const connection = await pool.promise().getConnection(); // Begin transaction
+  const connection = await pool.promise().getConnection();
   try {
     await connection.beginTransaction();
 
-    // Create order
+    // Buat pesanan
     const createOrderQuery = `
       INSERT INTO orders (userId, address) 
       VALUES (?, ?);
@@ -63,17 +63,17 @@ exports.buy = async (customerId, address) => {
     const [orderResult] = await connection.query(createOrderQuery, [customerId, address]);
     const orderId = orderResult.insertId;
 
-    // Move items from cart to productsInOrder
+    // Pindahkan item dari cart ke productsInOrder
     const addProductsQuery = `
       INSERT INTO productsInOrder (orderId, productId, quantity, totalPrice)
       SELECT ?, S.productId, S.quantity, P.price * S.quantity 
-      FROM shopingCart S 
+      FROM shoppingCart S 
       INNER JOIN product P ON S.productId = P.productId 
       WHERE S.userId = ?;
     `;
     await connection.query(addProductsQuery, [orderId, customerId]);
 
-    // Update total price in orders table
+    // Update total harga dalam tabel orders
     const updateTotalPriceQuery = `
       UPDATE orders 
       SET totalPrice = (
@@ -85,19 +85,16 @@ exports.buy = async (customerId, address) => {
     `;
     await connection.query(updateTotalPriceQuery, [orderId, orderId]);
 
-    // Clear shopping cart
-    const clearCartQuery = `
-      DELETE FROM shopingCart 
-      WHERE userId = ?;
-    `;
+    // Kosongkan shopping cart
+    const clearCartQuery = `DELETE FROM shoppingCart WHERE userId = ?;`;
     await connection.query(clearCartQuery, [customerId]);
 
-    await connection.commit(); // Commit transaction
-    connection.release();
+    await connection.commit();
     return { orderId };
   } catch (error) {
-    await connection.rollback(); // Rollback transaction on error
-    connection.release();
+    await connection.rollback();
     throw new Error("Error completing purchase: " + error.message);
+  } finally {
+    connection.release(); // Pastikan koneksi selalu ditutup
   }
 };

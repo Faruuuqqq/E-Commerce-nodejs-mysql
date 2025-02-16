@@ -58,7 +58,7 @@ exports.getShoppingCartEJS = async (userId) => {
     const result = await cartModel.getShoppingCart(userId);
     return result;
   } catch (error) {
-    console.error("Error fetching shopping aart for EJS:", error.message);
+    console.error("Error fetching shopping cart for EJS:", error.message);
     return [];
   }
 }

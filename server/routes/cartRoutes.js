@@ -22,7 +22,7 @@ router.get("/view", authenticateUser, async (req, res) => {
     const cartItems = await cartController.getShoppingCartEJS(userId);
     res.render("cart", { cartItems });
   } catch (error) {
-    res.return(500).send("Error loading shopping cart");
+    return res.status(500).send("Error loading shopping cart");
   }
 });
 
