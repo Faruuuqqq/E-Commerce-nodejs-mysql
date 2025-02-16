@@ -3,7 +3,7 @@ const router = express.Router();
 const productController = require("../controllers/productController");
 
 // Route to get all products
-router.get("/", productController.getAllProducts);
+//router.get("/", productController.getAllProducts);
 
 // Route to get product details by ID
 router.get("/:id", productController.getProductDetailsById);
@@ -19,5 +19,11 @@ router.post("/update", productController.updateProduct);
 
 // Route to delete a product by ID
 router.delete("/delete/:id", productController.deleteProduct);
+
+// route to display all product
+router.get("/view", productController.getAllProducts)
+
+router.get("/detail/:id", productController.getProductDetailsById);
+
 
 module.exports = router;

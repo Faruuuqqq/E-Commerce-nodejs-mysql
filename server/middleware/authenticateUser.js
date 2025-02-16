@@ -1,5 +1,4 @@
 const { verifyAccessToken } = require("../utils/token");
-const cookieParser = require("cookie-parser");
 
 module.exports = async (req, res, next) => {
   try {
@@ -8,18 +7,15 @@ module.exports = async (req, res, next) => {
     // Ambil token dari Authorization header atau cookies
     if (req.headers.authorization?.startsWith("Bearer ")) {
       token = req.headers.authorization.split(" ")[1];
-    } else if (req.cookies?.token) {
-      token = req.cookies.token;
+    } else if (req.cookies?.accessToken) {
+      token = req.cookies.accessToken;
     }
-
-    console.log("🔹 Headers:", req.headers);
-    console.log("🔹 Cookies:", req.cookies);
+    
     console.log("🔹 Token dari Authorization Header:", req.headers.authorization);
     console.log("🔹 Token dari Cookies:", req.cookies?.token);
-    console.log("🔹 Token yang diterima di middleware:", token);
 
     if (!token) {
-      console.log("⚠️ Token tidak ditemukan.");
+      console.log("Token tidak ditemukan.");
       return res.status(401).json({ error: "Unauthorized: Missing token." });
     }
 

@@ -5,8 +5,7 @@ const productModel = require("../models/productModel");
 exports.getAllProducts = async (req, res) => {
     try {
         const products = await productModel.getAllProducts();
-        res.json(products);
-        res.render("index", { products });
+        res.render("products", { products });
     } catch (error) {
         console.error("error: cannot fetching all products")
         res.status(500).json({error: 'internal server error'});
@@ -15,13 +14,19 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getProductDetailsById = async (req, res) => {
     try {
-        const products = await productModel.getAllProducts(products);
-        res.json(products);
+        const productId = req.params.id;
+        const product = await productModel.getProductDetailsById(productId);
+        
+        if (!product) {
+            return res.status(404).send("Product not found");
+        }
+        
+        res.render("product-detail", { product });
     } catch (error) {
-        console.error('error : fetching product details by id');
-        res.status(500).json({error:'internal server error'})
+        console.error('Error fetching product details:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
 
 exports.allOrderByProductId = async (req, res) => {
     try {
