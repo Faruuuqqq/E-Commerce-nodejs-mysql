@@ -1,11 +1,18 @@
-const {refreshToken} = require("../utils/token");
+const { refreshAccessToken } = require("../utils/token");
 
-// User Token Refresh Token
-exports.getRefreshToken = (req, res) => {
-    const refreshTokenInput = req.body.refreshToken;
-     refreshToken(refreshTokenInput).then((response)=>{
-         res.send(response);
-     }).catch(()=>{
-         res.status(500).send("Error Fetching Token");
-     });
+// Refresh Access Token
+exports.getRefreshToken = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  
+  if (!refreshToken) {
+    return res.status(401).json({ error: "Unauthorized, please login again" });
+  }
+
+  try {
+    const { accessToken } = await refreshAccessToken(refreshToken, res);
+    return res.json({ accessToken });
+  } catch (error) {
+    console.error("Error refreshing token:", error.message);
+    return res.status(403).json({ error: "Invalid or expired refresh token" });
+  }
 };
