@@ -1,5 +1,6 @@
 const pool = require('../database/connection');
 const bcrypt = require('bcryptjs');
+require("dotenv").config();
 
 // Register Function
 exports.register = async (email, password, isAdmin, fname, lname) => {
@@ -59,20 +60,18 @@ exports.login = async (email, password) => {
       isAdmin: user.isAdmin,
     };
 
-    const token = 'mock_access_token'; // Replace with real token generation
-    const refreshToken = 'mock_refresh_token'; // Replace with real token generation
+    const token = process.env.JWT_SECRET_KEY_ACCESS_TOKEN; // Replace with real token generation
+    // const refreshToken = 'mock_refresh_token'; // Replace with real token generation
 
     // Return the response
     return {
       ...userData,
       token,
-      refreshToken,
     };
   } catch (error) {
     throw error;
   }
 };
-
 
 const getUserByEmail = async (email) => {
   const [rows] = await pool.query(

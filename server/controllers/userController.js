@@ -1,6 +1,5 @@
 const userModel = require("../models/userModel");
 const { generateTokens } = require("../utils/token");
-const jwt = require("jsonwebtoken");
 
 // User Registration
 exports.register = async (req, res) => {
@@ -13,7 +12,7 @@ exports.register = async (req, res) => {
   try {
     await userModel.register(email, password, isAdmin, fname, lname);
     console.log("User registered successfully");
-    res.redirect("/users/login"); // Redirect ke halaman login setelah registrasi
+    res.redirect("/users/login");
   } catch (error) {
     console.error("Error registering user:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
@@ -30,23 +29,16 @@ exports.login = async (req, res) => {
 
   try {
     const result = await userModel.login(email, password);
-
     if (!result) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
     console.log("Login berhasil, user:", result);
 
-    // Generate token
-    const { accessToken } = generateTokens({ userId: result.userId, isAdmin: result.isAdmin });
+    // Generate token & langsung simpan di cookies
+    generateTokens({ userId: result.userId, isAdmin: result.isAdmin }, res);
 
-    console.log("Token yang dihasilkan:", accessToken );
-
-    // Simpan token di cookie
-    res.cookie("token", accessToken, { httpOnly: true, secure: true, sameSite: "Strict" });
-
-    // Kirim token ke client
-    res.json({ accessToken });
+    return res.redirect(302,'/home');
   } catch (error) {
     console.error("Error logging in:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
@@ -70,7 +62,14 @@ exports.changePassword = async (req, res) => {
 
 // User Logout
 exports.logout = (req, res) => {
-  res.clearCookie("token"); // Hapus access token dari cookie
-  res.clearCookie("refreshToken"); // Hapus refresh token dari cookie
-  res.json({ message: "Logout successful" });
+  try {
+    res.clearCookie("accesssToken");
+    res.clearCookie("refreshToken");
+    console.log("Logout successful");
+    res.redirect("/users/login");
+    // res.json({ message: "Logout successful" });
+  } catch (error){
+    console.error("Error logging out:", error.message)
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
