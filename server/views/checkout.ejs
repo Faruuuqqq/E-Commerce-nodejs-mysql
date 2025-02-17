@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="/public/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Checkout</h1>
+
+        <form action="/cart/buy" method="POST">
+            <label for="address">Shipping Address:</label>
+            <textarea id="address" name="address" required></textarea>
+
+            <button type="submit">Complete Purchase</button>
+        </form>
+
+        <a href="/cart/view">Back to Cart</a>
+    </div>
+</body>
+</html>

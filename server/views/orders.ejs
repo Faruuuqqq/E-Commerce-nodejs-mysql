@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History</title>
+    <link rel="stylesheet" href="/public/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Order History</h1>
+
+        <% if (orders.length === 0) { %>
+            <p>No orders found.</p>
+        <% } else { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Total Price</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% orders.forEach(order => { %>
+                        <tr>
+                            <td><%= order.orderId %></td>
+                            <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                            <td>$<%= order.totalPrice %></td>
+                            <td><a href="/orders/<%= order.orderId %>">View</a></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } %>
+
+        <a href="/">Back to Home</a>
+    </div>
+</body>
+</html>
