@@ -25,7 +25,7 @@
                                 <h5 class="card-title"><%= product.name %></h5>
                                 <p class="card-text"><%= product.description %></p>
                                 <p class="fw-bold">$<%= product.price %></p>
-                                <a href="/product/<%= product.productId %>" class="btn btn-primary w-100">View Details</a>
+                                <a href="/products/<%= product.productId %>" class="btn btn-primary w-100">View Details</a>
                             </div>
                         </div>
                     </div>
@@ -39,5 +39,6 @@
     <%- include('partials/footer') %>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/public/js/scripts.js"></script>
 </body>
 </html>
