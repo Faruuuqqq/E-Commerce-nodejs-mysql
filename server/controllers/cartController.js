@@ -18,6 +18,11 @@ exports.addToCart = async (req, res) => {
   try {
     const { productId, quantity, isPresent } = req.body;
     const userId = req.user.userId;
+
+    if (!productId || !quantity) {
+      return res.status(400).json({ error: "Product ID and quantity are required."})
+    }
+
     const result = await cartModel.addToCart(userId, productId, quantity, isPresent);
     res.status(200).json({ message: "Product added to cart successfully.", result });
   } catch (error) {
@@ -30,6 +35,11 @@ exports.removeFromCart = async (req, res) => {
   try {
     const productId = req.params.productId;
     const userId = req.user.userId;
+
+    if (!productId) {
+      return res.status(400).json({ error: "Product ID is required"});
+    }
+
     const result = await cartModel.removeFromCart(productId, userId);
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Product not found in cart or user does not exist." });
@@ -45,6 +55,10 @@ exports.buy = async (req, res) => {
   try {
     const userId = req.user.userId;
     const address = req.body.address;
+
+    if (!address) {
+      return res.status(400).json({ error: "Shipping address is required."});
+    }
     const result = await cartModel.buy(userId, address);
     res.status(200).json({ message: "Purchase successful.", result });
   } catch (error) {
@@ -61,4 +75,4 @@ exports.getShoppingCartEJS = async (userId) => {
     console.error("Error fetching shopping cart for EJS:", error.message);
     return [];
   }
-}
+};

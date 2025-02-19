@@ -38,7 +38,7 @@ exports.login = async (req, res) => {
     // Generate token & langsung simpan di cookies
     generateTokens({ userId: result.userId, isAdmin: result.isAdmin }, res);
 
-    return res.redirect(302,'/home');
+    return res.redirect(302,'/');
   } catch (error) {
     console.error("Error logging in:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
