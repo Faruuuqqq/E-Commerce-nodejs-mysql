@@ -1,5 +1,5 @@
 const mysql = require("mysql2/promise"); // Use promise-based mysql2
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config(); 
 
 let connectionParams;
 
@@ -32,7 +32,7 @@ const pool = mysql.createPool({
     queueLimit: 0,
 });
 
-// Test the connection
+
 (async () => {
     try {
         const connection = await pool.getConnection();
@@ -43,5 +43,5 @@ const pool = mysql.createPool({
     }
 })();
 
-// Export the pool
+
 module.exports = pool;

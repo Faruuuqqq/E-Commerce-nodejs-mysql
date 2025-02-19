@@ -3,18 +3,10 @@ const pool = require('../database/connection');
 // Reusable query execution function
 const executeQuery = async (query, params = []) => {
   try {
-    const result = await new Promise((resolve, reject) => {
-      pool.query(query, params, (err, result) => {
-        if (err) {
-          console.error('Database Error:', err.message);
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-    return result;
+    const [rows] = await pool.query(query, params);
+    return rows;
   } catch (error) {
+    console.error('Database Error:', error.message);
     throw new Error(`Query Execution Error: ${error.message}`);
   }
 };

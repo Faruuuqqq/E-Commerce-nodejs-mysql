@@ -3,9 +3,9 @@ const pool = require("../database/connection");
 exports.getShoppingCart = async (userId) => {
   try {
     const query = `
-      SELECT S.quantity, P.name, P.price, P.productId 
-      FROM shopingCart S 
-      INNER JOIN product P ON S.productId = P.productId 
+      SELECT S.quantity, P.name, P.price, P.id as productId 
+      FROM shoppingCart S 
+      INNER JOIN product P ON S.productId = P.id 
       WHERE S.userId = ?;
     `;
     const [result] = await pool.promise().query(query, [userId]);
@@ -19,12 +19,12 @@ exports.addToCart = async (customerId, productId, quantity, isPresent) => {
   try {
     const query = isPresent
       ? `
-        UPDATE shopingCart 
+        UPDATE shoppingCart 
         SET quantity = quantity + ? 
         WHERE productId = ? AND userId = ?;
       `
       : `
-        INSERT INTO shopingCart (userId, productId, quantity) 
+        INSERT INTO shoppingCart (userId, productId, quantity) 
         VALUES (?, ?, ?);
       `;
     const params = isPresent
@@ -40,7 +40,7 @@ exports.addToCart = async (customerId, productId, quantity, isPresent) => {
 exports.removeFromCart = async (productId, userId) => {
   try {
     const query = `
-      DELETE FROM shopingCart 
+      DELETE FROM shoppingCart 
       WHERE productId = ? AND userId = ?;
     `;
     const [result] = await pool.promise().query(query, [productId, userId]);
@@ -68,7 +68,7 @@ exports.buy = async (customerId, address) => {
       INSERT INTO productsInOrder (orderId, productId, quantity, totalPrice)
       SELECT ?, S.productId, S.quantity, P.price * S.quantity 
       FROM shoppingCart S 
-      INNER JOIN product P ON S.productId = P.productId 
+      INNER JOIN product P ON S.productId = P.id 
       WHERE S.userId = ?;
     `;
     await connection.query(addProductsQuery, [orderId, customerId]);
