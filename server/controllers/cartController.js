@@ -17,11 +17,13 @@ exports.getShoppingCart = async (req, res) => {
 exports.addToCart = async (req, res) => {
   try {
     const { productId, quantity, isPresent } = req.body;
-    const userId = req.user.userId;
+    const userId = req.session.userId;
 
     if (!productId || !quantity) {
       return res.status(400).json({ error: "Product ID and quantity are required."})
     }
+
+    else if (!userId) return res.status(401).json({ success: false, message: "Please log in first"});
 
     const result = await cartModel.addToCart(userId, productId, quantity, isPresent);
     res.status(200).json({ message: "Product added to cart successfully.", result });
@@ -74,5 +76,24 @@ exports.getShoppingCartEJS = async (userId) => {
   } catch (error) {
     console.error("Error fetching shopping cart for EJS:", error.message);
     return [];
+  }
+};
+
+exports.updateCartQuantity = async (userId, productId, quantity) => {
+  try {
+    const result = await cartModel.updateCartQuantity(userId, productId, quantity);
+    const updatedCart = await cartModel.getShoppingCart(userId);
+
+    const totalCartPrice = updatedCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const updatedItem = updatedCart.find(item => item.productId == productId);
+
+    return {
+      success: true,
+      newTotal: updatedItem.price * updatedItem.quantity,
+      totalCartPrice
+    };
+  } catch (error) {
+    console.error("Error updating cart quantity:", error.message);
+    return { success: false, error: "Failed to update quantity."};
   }
 };

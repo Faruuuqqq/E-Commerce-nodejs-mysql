@@ -6,6 +6,7 @@ exports.getAllProducts = async (req, res) => {
     try {
         const products = await productModel.getAllProducts();
         // console.log("Products Data:", products); // Debugging
+        console.log("Session user di /products:", req.user.user);
         res.render("products", { products, user: req.session.user });
         return products;
     } catch (error) {

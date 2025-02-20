@@ -12,7 +12,7 @@ exports.getAllOrders = async () => {
       ON 
         O.userId = U.userId;
     `;
-    const [result] = await pool.promise().query(query);
+    const [result] = await pool.query(query);
     return result;
   } catch (error) {
     throw new Error("Error fetching all orders: " + error.message);
@@ -33,7 +33,7 @@ exports.getOrderById = async (orderId) => {
       WHERE 
         O.orderId = ?;
     `;
-    const [result] = await pool.promise().query(query, [orderId]);
+    const [result] = await pool.query(query, [orderId]);
     return result;
   } catch (error) {
     throw new Error("Error fetching order by ID: " + error.message);
@@ -58,7 +58,7 @@ exports.getProductsByOrder = async (orderId) => {
       WHERE 
         O.orderId = ?;
     `;
-    const [result] = await pool.promise().query(query, [orderId]);
+    const [result] = await pool.query(query, [orderId]);
     return result;
   } catch (error) {
     throw new Error("Error fetching products by order ID: " + error.message);
@@ -75,7 +75,7 @@ exports.updateOrder = async (orderId, newData) => {
       WHERE 
         orderId = ?;
     `;
-    const [result] = await pool.promise().query(query, [newData, orderId]);
+    const [result] = await pool.query(query, [newData, orderId]);
     return result;
   } catch (error) {
     throw new Error("Error updating order: " + error.message);
@@ -102,7 +102,7 @@ exports.getPastOrdersByCustomerID = async (customerId) => {
       ORDER BY 
         O.orderId DESC;
     `;
-    const [result] = await pool.promise().query(query, [customerId]);
+    const [result] = await pool.query(query, [customerId]);
     return result;
   } catch (error) {
     throw new Error("Error fetching past orders by customer ID: " + error.message);
