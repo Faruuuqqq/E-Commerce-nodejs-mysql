@@ -28,40 +28,98 @@
                     <% let totalPrice = 0; %>
                     <% cartItems.forEach(item => { %>
                         <% totalPrice += item.price * item.quantity; %>
-                        <tr>
+                        <tr data-product-id="<%= item.productId %>">
                             <td><%= item.name %></td>
                             <td>$<%= item.price %></td>
-                            <td><%= item.quantity %></td>
-                            <td>$<%= item.price * item.quantity %></td>
                             <td>
-                                <a href="/cart/remove/<%= item.productId %>" class="btn btn-danger btn-sm">Remove</a>
+                                <input type="number" class="form-control quantity" value="<%= item.quantity %>" min="1" data-price="<%= item.price %>">
+                            </td>
+                            <td class="total-price">$<%= item.price * item.quantity %></td>
+                            <td>
+                                <button class="btn btn-danger btn-sm remove-item">Remove</button>
                             </td>
                         </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-
-            <h3 class="fw-bold text-end">Total: $<%= totalPrice %></h3>
-
-            <div class="text-end mt-3">
-                <a href="/cart/clear" class="btn btn-outline-danger">Clear Cart</a>
-                <a href="/checkout" class="btn btn-success">Proceed to Checkout</a>
+                        <% }); %>
+                    </tbody>
+                </table>
+    
+                <h3 class="fw-bold text-end">Total: $<span id="total-price"><%= totalPrice %></span></h3>
+    
+                <div class="text-end mt-3">
+                    <button id="clear-cart" class="btn btn-outline-danger">Clear Cart</button>
+                    <a href="/checkout" class="btn btn-success">Proceed to Checkout</a>
+                </div>
+    
+                <form id="checkout-form" action="/cart/buy" method="POST" class="mt-4">
+                    <label for="address" class="form-label">Enter your address:</label>
+                    <input type="text" name="address" id="address" class="form-control" required>
+                    <button type="submit" class="btn btn-primary mt-2">Checkout</button>
+                </form>
             </div>
-
-            <form action="/cart/buy" method="POST" class="mt-4">
-                <label for="address" class="form-label">Enter your address:</label>
-                <input type="text" name="address" id="address" class="form-control" required>
-                <button type="submit" class="btn btn-primary mt-2">Checkout</button>
-            </form>
+        <% } else { %>
+            <p class="text-center mt-4">Your cart is empty.</p>
+        <% } %>
+    
+        <div class="text-center mt-3">
+            <a href="/" class="btn btn-secondary">Continue Shopping</a>
         </div>
-    <% } else { %>
-        <p class="text-center mt-4">Your cart is empty.</p>
-    <% } %>
-
-    <div class="text-center mt-3">
-        <a href="/" class="btn btn-secondary">Continue Shopping</a>
     </div>
-</div>
-
-</body>
-</html>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Update Quantity
+            document.querySelectorAll(".quantity-input").forEach(input => {
+                input.addEventListener("change", function() {
+                    const productId = this.dataset.productId;
+                    const newQuantity = this.value;
+    
+                    fetch(`/cart/update/${productId}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ quantity: newQuantity })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById(`total-${productId}`).innerText = `$${data.newTotal}`;
+                            document.getElementById("total-price").innerText = data.totalCartPrice;
+                        }
+                    })
+                    .catch(err => console.error("Error updating quantity:", err));
+                });
+            });
+    
+            // Remove Item
+            document.querySelectorAll(".remove-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    const productId = this.dataset.productId;
+    
+                    fetch(`/cart/remove/${productId}`, {
+                        method: "DELETE"
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById(`cart-item-${productId}`).remove();
+                            document.getElementById("total-price").innerText = data.totalCartPrice;
+                        }
+                    })
+                    .catch(err => console.error("Error removing item:", err));
+                });
+            });
+    
+            // Clear Cart
+            document.getElementById("clear-cart").addEventListener("click", function() {
+                fetch("/cart/clear", { method: "DELETE" })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) location.reload();
+                })
+                .catch(err => console.error("Error clearing cart:", err));
+            });
+        });
+    </script>
+    
+    </body>
+    </html>
+    
