@@ -3,7 +3,8 @@ const orderModel = require("../models/orderModel");
 exports.getAllOrders = async (req, res) => {
   try {
     const result = await orderModel.getAllOrders();
-    res.status(200).json(result);
+    // res.status(200).json(result);
+    res.render("orders", result);
   } catch (error) {
     console.error("Error fetching orders:", error.message);
     res.status(500).json({ error: "Failed to fetch orders." });

@@ -17,7 +17,7 @@ exports.getShoppingCart = async (req, res) => {
 exports.addToCart = async (req, res) => {
   try {
     const { productId, quantity, isPresent } = req.body;
-    const userId = req.session.userId;
+    const userId = req.user.userId;
 
     if (!productId || !quantity) {
       return res.status(400).json({ error: "Product ID and quantity are required."})

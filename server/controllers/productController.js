@@ -1,13 +1,11 @@
-// productController.js
-
 const productModel = require("../models/productModel");
 
 exports.getAllProducts = async (req, res) => {
     try {
         const products = await productModel.getAllProducts();
         // console.log("Products Data:", products); // Debugging
-        console.log("Session user di /products:", req.user.user);
-        res.render("products", { products, user: req.session.user });
+        // console.log("Session user di /products:", req.user.user);
+        res.render("products", { user: req.user, products });
         return products;
     } catch (error) {
         console.error("error: cannot fetching all products")
@@ -17,14 +15,14 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getProductDetailsById = async (req, res) => {
     try {
-        const productId = req.params.id;
+        const { productId } = req.params;
         const product = await productModel.getProductDetailsById(productId);
         
         if (!product) {
             return res.status(404).send("Product not found");
         }
         
-        res.render("productDetail", { product });
+        res.render("productDetail", { user: req.user, product });
     } catch (error) {
         console.error('Error fetching product details:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -33,7 +31,7 @@ exports.getProductDetailsById = async (req, res) => {
 
 exports.allOrderByProductId = async (req, res) => {
     try {
-        const { productId } = req.params.id;
+        const { productId } = req.params;
         const products = await productModel.allOrderByProductId(productId);
         res.json(products); 
     } catch (error) {
@@ -55,10 +53,11 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
     try {
-        const { id, name, price, description} = req.body;
-        const result = await productModel.updateProduct(id, name, price, description);
+        const { name, price, description } = req.body;
+        const { productId } = req.params;
+        const result = await productModel.updateProduct(productId, name, price, description);
         res.json(result);
-    } catch (error) {
+    } catch (error) { 
         console.error('error : updating product');
         res.status(500).json({error:'internal server error'});
     }
@@ -66,7 +65,7 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
     try {
-        const productId = req.params.id;
+        const { productId } = req.params
         await productModel.deleteProduct(productId);
         res.status(204).send();
     } catch (error) {
