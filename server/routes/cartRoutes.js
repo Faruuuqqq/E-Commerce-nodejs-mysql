@@ -15,9 +15,9 @@ router.post("/buy", authenticateUser, cartController.buy);
 // Route to render cart page
 router.get("/", authenticateUser, async (req, res) => {
   try {
-    const userId = req.session.userId;
+    const userId = req.user.userId;
     const cartItems = await cartController.getShoppingCartEJS(userId);
-    res.render("cart", { cartItems, user: req.user });
+    res.render("cart", { cartItems, user: userId });
   } catch (error) {
     return res.status(500).send("Error loading shopping cart");
   }

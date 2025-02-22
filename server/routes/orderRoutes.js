@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const orderController = require("../controllers/orderController");
+const authenticateUser = require("../middleware/authenticateUser");
 
 // Route to get all orders
-router.get("/", orderController.getAllOrders);
+router.get("/", authenticateUser, orderController.getAllOrders);
 
 // Route to get order details by ID
 router.get("/:id", orderController.getOrderById);
