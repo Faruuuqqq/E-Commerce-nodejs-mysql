@@ -68,9 +68,9 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // Update Quantity
-            document.querySelectorAll(".quantity-input").forEach(input => {
+            document.querySelectorAll(".quantity").forEach(input => {
                 input.addEventListener("change", function() {
-                    const productId = this.dataset.productId;
+                    const productId = this.closest("tr").dataset.productId;
                     const newQuantity = this.value;
     
                     fetch(`/cart/update/${productId}`, {
@@ -81,8 +81,7 @@
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {
-                            document.getElementById(`total-${productId}`).innerText = `$${data.newTotal}`;
-                            document.getElementById("total-price").innerText = data.totalCartPrice;
+                            location.reload();
                         }
                     })
                     .catch(err => console.error("Error updating quantity:", err));
@@ -90,9 +89,9 @@
             });
     
             // Remove Item
-            document.querySelectorAll(".remove-btn").forEach(button => {
+            document.querySelectorAll(".remove-item").forEach(button => {
                 button.addEventListener("click", function() {
-                    const productId = this.dataset.productId;
+                    const productId = this.closest("tr").dataset.productId;
     
                     fetch(`/cart/remove/${productId}`, {
                         method: "DELETE"
@@ -100,8 +99,7 @@
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {
-                            document.getElementById(`cart-item-${productId}`).remove();
-                            document.getElementById("total-price").innerText = data.totalCartPrice;
+                            location.reload();
                         }
                     })
                     .catch(err => console.error("Error removing item:", err));
@@ -117,9 +115,34 @@
                 })
                 .catch(err => console.error("Error clearing cart:", err));
             });
+    
+            // Add to Cart
+            document.querySelectorAll(".add-to-cart").forEach(button => {
+                button.addEventListener("click", function() {
+                    const productId = this.dataset.productId;
+                    const quantity = 1; // Default quantity
+    
+                    fetch("/cart/add", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ productId, quantity })
+                    })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error("Invalid response from server");
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert("Product added to cart!");
+                        }
+                    })
+                    .catch(err => console.error("Error adding to cart:", err));
+                });
+            });
         });
     </script>
     
     </body>
     </html>
-    

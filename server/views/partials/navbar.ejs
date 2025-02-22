@@ -6,10 +6,11 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+          <% console.log("User di navbar:", user); %> 
           <% if (user) { %> <!-- Jika user sudah login -->
           <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
           <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
-          <li class="nav-item"><a class="nav-link" href="/orders/view">Orders</a></li>
+          <li class="nav-item"><a class="nav-link" href="/orders">Orders</a></li>
           <li class="nav-item"><a class="nav-link" href="/users/logout">Logout</a></li>
         <% } else { %> <!-- Jika user belum login -->
           <li class="nav-item"><a class="nav-link" href="/users/login">Login</a></li>
