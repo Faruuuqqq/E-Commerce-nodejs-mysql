@@ -3,9 +3,9 @@ const pool = require("../database/connection");
 exports.getShoppingCart = async (userId) => {
   try {
     const query = `
-      SELECT S.quantity, P.name, P.price, P.id as productId 
+      SELECT S.quantity, P.name, P.price, P.productId 
       FROM shoppingCart S 
-      INNER JOIN product P ON S.productId = P.id 
+      INNER JOIN product P ON S.productId = P.productId 
       WHERE S.userId = ?;
     `;
     const [result] = await pool.query(query, [userId]);
@@ -32,6 +32,9 @@ exports.addToCart = async (customerId, productId, quantity, isPresent) => {
       : [customerId, productId, quantity];
 
     const [result] = await pool.query(query, params);
+    console.log("Query: INSERT INTO shoppingCart (userId, productId, quantity) VALUES (?, ?, ?)");
+    console.log("Values:", [customerId, productId, quantity]);
+
     return result;
   } catch (error) {
     throw new Error("Error adding to cart: " + error.message);
@@ -97,7 +100,8 @@ exports.buy = async (customerId, address) => {
 };
 
 exports.updateCartQuantity = async (userId, productId, quantity) => {
-  const query = `UPDATE cart SET quantity = ? WHERE userId = ? AND productId = ?`;
+  const query = `UPDATE shoppingcart SET quantity = ? WHERE userId = ? AND productId = ?`;
   const values = [quantity, userId, productId];
-  return pool.query(query, values); 
+  const [result] = await pool.query(query, values);
+  return result;
 };

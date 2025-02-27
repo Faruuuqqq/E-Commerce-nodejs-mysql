@@ -14,7 +14,6 @@
     <div class="container mt-5">
         <h1 class="text-center fw-bold">Our Products</h1>
         <p class="text-center text-muted">Browse our latest collection of products.</p>
-
         <div class="row g-4">
             
             <% if (products.length > 0) { %>
@@ -27,6 +26,7 @@
                                 <p class="card-text"><%= product.description %></p>
                                 <p class="fw-bold">$<%= product.price %></p>
                                 <a href="/products/<%= product.productId %>" class="btn btn-primary w-100">View Details</a>
+                                
                             </div>
                         </div>
                     </div>

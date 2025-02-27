@@ -15,27 +15,34 @@ exports.getShoppingCart = async (req, res) => {
 };
 
 exports.addToCart = async (req, res) => {
-  try {
-    const { productId, quantity, isPresent } = req.body;
-    const userId = req.user.userId;
+    try {
+        const { quantity, isPresent } = req.body;
+        const { productId } = req.params;  // Product ID dari URL
+        const userId = req.user.userId;
 
-    if (!productId || !quantity) {
-      return res.status(400).json({ error: "Product ID and quantity are required."})
+        console.log("Received request to add to cart:");
+        console.log("User ID:", userId);
+        console.log("Product ID:", productId);
+        console.log("Quantity:", quantity);
+
+        if (!productId || !quantity) {
+            return res.status(400).json({ error: "Product ID and quantity are required."});
+        }
+
+        if (!userId) return res.status(401).json({ success: false, message: "Please log in first" });
+
+        const result = await cartModel.addToCart(userId, productId, quantity, isPresent);
+        res.status(200).json({ success: true, message: "Product added to cart successfully.", result });
+    } catch (error) {
+        console.error("Error adding product to cart:", error.message);
+        res.status(500).json({ error: "Failed to add product to cart." });
     }
-
-    else if (!userId) return res.status(401).json({ success: false, message: "Please log in first"});
-
-    const result = await cartModel.addToCart(userId, productId, quantity, isPresent);
-    res.status(200).json({ message: "Product added to cart successfully.", result });
-  } catch (error) {
-    console.error("Error adding product to cart:", error.message);
-    res.status(500).json({ error: "Failed to add product to cart." });
-  }
 };
+
 
 exports.removeFromCart = async (req, res) => {
   try {
-    const productId = req.params.productId;
+    const { productId } = req.params;
     const userId = req.user.userId;
 
     if (!productId) {
@@ -56,7 +63,7 @@ exports.removeFromCart = async (req, res) => {
 exports.buy = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const address = req.body.address;
+    const { address } = req.body;
 
     if (!address) {
       return res.status(400).json({ error: "Shipping address is required."});
