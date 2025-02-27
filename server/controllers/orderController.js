@@ -2,9 +2,10 @@ const orderModel = require("../models/orderModel");
 
 exports.getAllOrders = async (req, res) => {
   try {
-    const result = await orderModel.getAllOrders();
+    const orders = await orderModel.getAllOrders();
     // res.status(200).json(result);
-    res.render("orders", result);
+    console.log("Orders data", orders);
+    res.render("orders", { orders });
   } catch (error) {
     console.error("Error fetching orders:", error.message);
     res.status(500).json({ error: "Failed to fetch orders." });
@@ -24,6 +25,19 @@ exports.getOrderById = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch order." });
   }
 };
+
+exports.getUserOrders = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const orders = await orderModel.getPastOrdersByCustomerID(userId);
+    console.log("User orders data:", orders); // debugging
+
+    res.render("orders", { orders});
+  } catch (error) {
+    console.error("Error fetching order:", error.message);
+    res.status(500).json({ error: "Failed to fetch order." });
+  }
+}
 
 exports.getProductsByOrder = async (req, res) => {
   try {
