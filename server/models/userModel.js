@@ -117,3 +117,25 @@ exports.getUserById = async(userId) => {
     throw error;
   }
 }
+
+exports.getUserById = async (userId) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT userId, fname, lname, email, createdDate, address FROM users WHERE userId = ?",
+      [userId]
+    );
+    return rows[0];
+  } catch (error) {
+    throw new Error("Error fetching user by ID: " + error.message);
+  }
+};
+
+exports.updateUser = async (userId, newData) => {
+  try {
+    const query = "UPDATE users SET ? WHERE userId = ?";
+    const [result] = await pool.query(query, [newData, userId]);
+    return result;
+  } catch (error) {
+    throw new Error("Error updating user: " + error.message);
+  }
+};

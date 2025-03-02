@@ -8,6 +8,7 @@ require("dotenv").config();
 
 // Import middleware
 const authMiddleware = require("./middleware/authMiddleware");
+// const authorizeAdmin = require("./middleware/authorizeAdmin");
 
 // Import routes
 const userRoutes = require("./routes/userRoutes");
@@ -36,6 +37,7 @@ app.use(session({
 
 // Auth middleware untuk menyimpan `user` di res.locals
 app.use(authMiddleware);
+// app.use(authorizeAdmin);
 
 // Set view engine dan folder public
 app.set("view engine", "ejs");

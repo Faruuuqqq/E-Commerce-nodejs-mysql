@@ -1,4 +1,4 @@
-const mysql = require("mysql2/promise"); // Use promise-based mysql2
+const mysql = require("mysql2/promise");
 require('dotenv').config(); 
 
 let connectionParams;
@@ -12,7 +12,7 @@ if (useLocalhost) {
         user: "root",
         host: "localhost",
         password: "",
-        database: "market",
+        database: "marketplace",
     };
 } else {
     console.log("Using server database configuration...");

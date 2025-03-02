@@ -1,5 +1,7 @@
 const userModel = require("../models/userModel");
+const orderModel = require("../models/orderModel");
 const { generateTokens } = require("../utils/token");
+const { add } = require("lodash");
 
 // User Registration
 exports.register = async (req, res) => {
@@ -71,5 +73,43 @@ exports.logout = (req, res) => {
   } catch (error){
     console.error("Error logging out:", error.message)
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Get User Profile
+exports.getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const user = await userModel.getUserById(userId); // Ambil data user
+    const orders = await orderModel.getPastOrdersByCustomerID(userId); // Ambil riwayat pesanan
+    const address = req.user.address;
+    console.log("address", address)
+    res.render("profile", { 
+      user, 
+      orders,
+      isAdmin: req.user.isAdmin,
+      address
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error.message);
+    res.status(500).json({ error: "Failed to fetch user profile." });
+  }
+};
+
+// Update User Profile
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { fname, lname, email, address } = req.body;
+
+    if (!fname || !lname || !email ) {
+      return res.status(400).json({ error: "First name, last name, and email are required." });
+    }
+
+    const result = await userModel.updateUser(userId, { fname, lname, email, address });
+    res.status(200).json({ message: "Profile updated successfully.", result });
+  } catch (error) {
+    console.error("Error updating user profile:", error.message);
+    res.status(500).json({ error: "Failed to update user profile." });
   }
 };
