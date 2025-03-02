@@ -1,5 +1,6 @@
 const pool = require("../database/connection");
 
+// get data from shoppingcart based on userId
 exports.getShoppingCart = async (userId) => {
   try {
     const query = `
@@ -15,29 +16,27 @@ exports.getShoppingCart = async (userId) => {
   }
 };
 
-exports.addToCart = async (customerId, productId, quantity, isPresent) => {
+// check the product is in the cart 
+exports.findCartItem = async (userId, productId) => {
   try {
-    const query = isPresent
-      ? `
-        UPDATE shoppingCart 
-        SET quantity = quantity + ? 
-        WHERE productId = ? AND userId = ?;
-      `
-      : `
-        INSERT INTO shoppingCart (userId, productId, quantity) 
-        VALUES (?, ?, ?);
-      `;
-    const params = isPresent
-      ? [quantity, productId, customerId]
-      : [customerId, productId, quantity];
+    const query = `SELECT * FROM shoppingCart WHERE userId = ? AND productId = ?`;
+    const [rows] = await pool.query(query, [userId, productId]);
+    return rows.length > 0 ? rows[0] : null;
+  } catch (error) {
+    console.error("❌ Error checking cart item:", error);
+    throw new Error(`Database error: ${error.message}`);
+  }
+};
 
-    const [result] = await pool.query(query, params);
-    console.log("Query: INSERT INTO shoppingCart (userId, productId, quantity) VALUES (?, ?, ?)");
-    console.log("Values:", [customerId, productId, quantity]);
+exports.addToCart = async (userId, productId, quantity) => {
+  try {
+    const query = `INSERT INTO shoppingCart (userId, productId, quantity) VALUES (?, ?, ?)`;
+    const [result] = await pool.query(query, [userId, productId, quantity]);
 
     return result;
   } catch (error) {
-    throw new Error("Error adding to cart: " + error.message);
+    console.error("❌ Error adding product to cart:", error);
+    throw new Error(`Database error: ${error.message}`);
   }
 };
 
@@ -54,8 +53,8 @@ exports.removeFromCart = async (productId, userId) => {
   }
 };
 
-exports.buy = async (customerId, address) => {
-  const connection = await pool.getConnection(); 
+exports.buy = async (userId, address) => {
+  const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
 
@@ -63,17 +62,17 @@ exports.buy = async (customerId, address) => {
       INSERT INTO orders (userId, address) 
       VALUES (?, ?);
     `;
-    const [orderResult] = await connection.query(createOrderQuery, [customerId, address]);
+    const [orderResult] = await connection.query(createOrderQuery, [userId, address]);
     const orderId = orderResult.insertId;
 
     const addProductsQuery = `
       INSERT INTO productsInOrder (orderId, productId, quantity, totalPrice)
       SELECT ?, S.productId, S.quantity, P.price * S.quantity 
       FROM shoppingCart S 
-      INNER JOIN product P ON S.productId = P.id 
+      INNER JOIN product P ON S.productId = P.productId 
       WHERE S.userId = ?;
     `;
-    await connection.query(addProductsQuery, [orderId, customerId]);
+    await connection.query(addProductsQuery, [orderId, userId]);
 
     const updateTotalPriceQuery = `
       UPDATE orders 
@@ -87,7 +86,7 @@ exports.buy = async (customerId, address) => {
     await connection.query(updateTotalPriceQuery, [orderId, orderId]);
 
     const clearCartQuery = `DELETE FROM shoppingCart WHERE userId = ?;`;
-    await connection.query(clearCartQuery, [customerId]);
+    await connection.query(clearCartQuery, [userId]);
 
     await connection.commit();
     return { orderId };
@@ -100,8 +99,15 @@ exports.buy = async (customerId, address) => {
 };
 
 exports.updateCartQuantity = async (userId, productId, quantity) => {
-  const query = `UPDATE shoppingcart SET quantity = ? WHERE userId = ? AND productId = ?`;
-  const values = [quantity, userId, productId];
-  const [result] = await pool.query(query, values);
-  return result;
+  try {
+    const query = `
+      UPDATE shoppingCart 
+      SET quantity = ? 
+      WHERE userId = ? AND productId = ?;
+    `;
+    const [result] = await pool.query(query, [quantity, userId, productId]);
+    return result;
+  } catch (error) {
+    throw new Error("Error updating cart quantity: " + error.message);
+  }
 };

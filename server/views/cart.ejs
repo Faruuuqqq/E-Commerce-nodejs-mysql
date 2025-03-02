@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
-    <link rel="stylesheet" href="/css/styles.css"> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="/css/style.css"> -->
 </head>
 <body>
+    <%- include('partials/navbar') %>
 
-<div class="container mt-5">
-    <h1 class="text-center">Your Shopping Cart</h1>
+    <div class="container mt-5">
+        <h1 class="fw-bold">Shopping Cart</h1>
 
-    <% if (cartItems && cartItems.length > 0) { %>
-        <div class="cart-container p-4">
+        <% if (cartItems.length > 0) { %>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -21,62 +21,50 @@
                         <th>Price</th>
                         <th>Quantity</th>
                         <th>Total</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% let totalPrice = 0; %>
                     <% cartItems.forEach(item => { %>
-                        <% totalPrice += item.price * item.quantity; %>
-                        <tr data-product-id="<%= item.productId %>">
+                        <tr>
                             <td><%= item.name %></td>
                             <td>$<%= item.price %></td>
                             <td>
-                                <input type="number" class="form-control quantity" value="<%= item.quantity %>" min="1" data-price="<%= item.price %>">
+                                <input type="number" class="form-control cart-quantity" data-product-id="<%= item.productId %>" value="<%= item.quantity %>" min="1">
                             </td>
-                            <td class="total-price">$<%= item.price * item.quantity %></td>
+                            <td class="cart-total">$<%= item.price * item.quantity %></td>
                             <td>
-                                <button class="btn btn-danger btn-sm remove-item">Remove</button>
+                                <button class="btn btn-danger remove-from-cart" data-product-id="<%= item.productId %>">Remove</button>
                             </td>
                         </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-    
-                <h3 class="fw-bold text-end">Total: $<span id="total-price"><%= totalPrice %></span></h3>
-    
-                <div class="text-end mt-3">
-                    <button id="clear-cart" class="btn btn-outline-danger">Clear Cart</button>
-                    <a href="/checkout" class="btn btn-success">Proceed to Checkout</a>
-                </div>
-    
-                <form id="checkout-form" action="/cart/buy" method="POST" class="mt-4">
-                    <label for="address" class="form-label">Enter your address:</label>
-                    <input type="text" name="address" id="address" class="form-control" required>
-                    <button type="submit" class="btn btn-primary mt-2">Checkout</button>
-                </form>
-            </div>
+                    <% }) %>
+                </tbody>
+            </table>
+
+            <h3 class="fw-bold">Total Price: $<span id="total-cart-price">
+                <%= cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) %>
+            </span></h3>
+
+            <button class="btn btn-success btn-lg" id="checkout-button"
+                 data-address="<%= user.address ? user.address : '' %>"> Checkout </button>
+
         <% } else { %>
-            <p class="text-center mt-4">Your cart is empty.</p>
+            <p class="text-muted">Your cart is empty.</p>
         <% } %>
-    
-        <div class="text-center mt-3">
-            <a href="/" class="btn btn-secondary">Continue Shopping</a>
-        </div>
     </div>
-    
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // Update Quantity
-            document.querySelectorAll(".quantity").forEach(input => {
+            document.querySelectorAll(".cart-quantity").forEach(input => {
                 input.addEventListener("change", function() {
-                    const productId = this.closest("tr").dataset.productId;
-                    const newQuantity = this.value;
-    
+                    let productId = this.dataset.productId;
+                    let quantity = this.value;
+
                     fetch(`/cart/update/${productId}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ quantity: newQuantity })
+                        body: JSON.stringify({ quantity })
                     })
                     .then(res => res.json())
                     .then(data => {
@@ -84,17 +72,17 @@
                             location.reload();
                         }
                     })
-                    .catch(err => console.error("Error updating quantity:", err));
+                    .catch(err => console.error("Error updating cart:", err));
                 });
             });
-    
+
             // Remove Item
-            document.querySelectorAll(".remove-item").forEach(button => {
+            document.querySelectorAll(".remove-from-cart").forEach(button => {
                 button.addEventListener("click", function() {
-                    const productId = this.closest("tr").dataset.productId;
-    
+                    let productId = this.dataset.productId;
+
                     fetch(`/cart/remove/${productId}`, {
-                        method: "DELETE"
+                        method: "DELETE",
                     })
                     .then(res => res.json())
                     .then(data => {
@@ -102,47 +90,40 @@
                             location.reload();
                         }
                     })
-                    .catch(err => console.error("Error removing item:", err));
+                    .catch(err => console.error("Error removing from cart:", err));
                 });
             });
-    
-            // Clear Cart
-            document.getElementById("clear-cart").addEventListener("click", function() {
-                fetch("/cart/clear", { method: "DELETE" })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) location.reload();
-                })
-                .catch(err => console.error("Error clearing cart:", err));
-            });
-    
-            // Add to Cart
-            document.querySelectorAll(".add-to-cart").forEach(button => {
-                button.addEventListener("click", function() {
-                    const productId = this.dataset.productId;
-                    const quantity = 1; // Default quantity
-    
-                    fetch("/cart/add", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ productId, quantity })
-                    })
-                    .then(res => {
-                        if (!res.ok) {
-                            throw new Error("Invalid response from server");
+
+            // Checkout
+
+            document.getElementById("checkout-button").addEventListener("click", function() {
+                        let address = this.dataset.address; 
+                        
+                        console.log("Address from button:", address);
+                        
+                        if (!address || address.trim() === "") { 
+                            address = prompt("Enter your address:");
+                            if (!address) return; 
                         }
-                        return res.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            alert("Product added to cart!");
-                        }
-                    })
-                    .catch(err => console.error("Error adding to cart:", err));
+
+                        fetch("/cart/buy", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ address })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.message) {
+                                alert("Purchase successful!");
+                                window.location.href = "/orders";
+                            }
+                        })
+                        .catch(err => console.error("Error processing purchase:", err));
+                    });
                 });
-            });
-        });
+
+        
     </script>
-    
-    </body>
-    </html>
+
+</body>
+</html>
