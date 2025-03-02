@@ -82,27 +82,22 @@ exports.updateOrder = async (orderId, newData) => {
   }
 };
 
-exports.getPastOrdersByCustomerID = async (customerId) => {
+exports.getPastOrdersByCustomerID = async (userId) => {
   try {
     const query = `
       SELECT 
-        O.orderId, P.name, O.createdDate, PIN.quantity, PIN.totalPrice 
-      FROM 
-        orders O 
-      INNER JOIN 
-        productsInOrder PIN 
-      ON 
-        O.orderId = PIN.orderId  
-      INNER JOIN 
-        product P 
-      ON 
-        PIN.productId = P.productId 
-      WHERE 
-        O.userId = ? 
-      ORDER BY 
-        O.orderId DESC;
+       O.orderId,
+       O.createdDate,
+       GROUP_CONCAT(P.name, ' (x', PIN.quantity, ')' SEPARATOR ', ') AS products,
+       SUM(PIN.totalPrice) AS totalPrice
+      FROM orders O
+      INNER JOIN productsinorder PIN ON O.orderId = PIN.orderId
+      INNER JOIN product P ON PIN.productId = P.productId
+      WHERE O.userId = ?
+      GROUP BY O.orderId
+      ORDER BY O.orderId DESC;
     `;
-    const [result] = await pool.query(query, [customerId]);
+    const [result] = await pool.query(query, [userId]);
     return result;
   } catch (error) {
     throw new Error("Error fetching past orders by customer ID: " + error.message);

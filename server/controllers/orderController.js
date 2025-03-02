@@ -30,9 +30,11 @@ exports.getUserOrders = async (req, res) => {
   try {
     const userId = req.user.userId;
     const orders = await orderModel.getPastOrdersByCustomerID(userId);
-    console.log("User orders data:", orders); // debugging
-
-    res.render("orders", { orders});
+    // console.log("User orders data:", orders); // debugging
+    if (!orders) {
+      return res.status(404).json({ error: "No orders found for this user." });
+    }
+    res.render("orders", { orders, user: userId});
   } catch (error) {
     console.error("Error fetching order:", error.message);
     res.status(500).json({ error: "Failed to fetch order." });
@@ -75,7 +77,8 @@ exports.getPastOrdersByCustomerID = async (req, res) => {
     if (!result || result.length === 0) {
       return res.status(404).json({ error: "No past orders found for this customer." });
     }
-    res.status(200).json(result);
+    // res.status(200).json(result);
+    res.render("orders", { orders});
   } catch (error) {
     console.error("Error fetching past orders:", error.message);
     res.status(500).json({ error: "Failed to fetch past orders." });
