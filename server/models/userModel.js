@@ -112,9 +112,9 @@ exports.getUserById = async(userId) => {
       'SELECT userId, email, isAdmin, fname, lname, FROM users WHERE userId = ?',
       [userId]
     );
-    return rows[0];
+    return rows[0] || null;
   } catch (error) {
-    throw error;
+    throw new Error("Error fetching user by ID: " + error.message);
   }
 }
 

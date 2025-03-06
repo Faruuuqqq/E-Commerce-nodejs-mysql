@@ -17,6 +17,8 @@ const orderRoutes = require("./routes/orderRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const userTokenRoutes = require("./routes/userTokenRoutes");
 const homeRoutes = require("./routes/homeRoutes");
+const checkoutRoutes = require("./routes/checkoutRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
@@ -50,6 +52,8 @@ app.use("/orders", orderRoutes);
 app.use("/cart", cartRoutes);
 app.use("/token", userTokenRoutes);
 app.use("/", homeRoutes);
+app.use("/checkout", checkoutRoutes);
+app.use("/admin", adminRoutes);
 
 // =================== START SERVER ===================
 const PORT = process.env.PORT || 3000;

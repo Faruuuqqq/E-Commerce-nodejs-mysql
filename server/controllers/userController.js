@@ -1,7 +1,6 @@
 const userModel = require("../models/userModel");
 const orderModel = require("../models/orderModel");
 const { generateTokens } = require("../utils/token");
-const { add } = require("lodash");
 
 // User Registration
 exports.register = async (req, res) => {

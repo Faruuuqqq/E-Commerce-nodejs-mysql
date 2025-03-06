@@ -7,7 +7,7 @@ const userModel = require("../models/userModel");
 router.get("/", authenticateUser, async (req, res) => {
   try {
     const products = await productModel.getAllProducts();
-    res.render("home", { user: req.user, products });
+    res.render("home", { user: req.user, isAdmin: req.user.isAdmin ,products });
   } catch (error) {
     console.error("Error rendering homepage:", error);
     res.status(500).send("Internal Server Error");
