@@ -1,7 +1,9 @@
 module.exports = (req, res, next) => {
-  if (req.user && req.user.isAdmin === "admin") {
-    next ();
+  console.log("User Data:", req.user); // Cek apakah req.user ada
+  if (req.user && req.user.isAdmin) {
+      return next();
   } else {
-    res.status(403).send("Access denied. admins only");
+      console.log("Access Denied: User is not an admin");
+      return res.status(403).send("Access denied. Admins only.");
   }
-}
+};
