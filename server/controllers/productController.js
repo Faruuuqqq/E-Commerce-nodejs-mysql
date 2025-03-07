@@ -3,12 +3,11 @@ const productModel = require("../models/productModel");
 exports.getAllProducts = async (req, res) => {
     try {
         const products = await productModel.getAllProducts();
-        // console.log("Products Data:", products); // Debugging
-        // console.log("Session user di /products:", req.user.user);
+                // console.log("Products Data:", products); // Debugging
+                // console.log("Session user di /products:", req.user.user);
         res.render("products", { user: req.user, products });
-        return products;
     } catch (error) {
-        console.error("error: cannot fetching all products")
+        console.error("error: cannot fetching all products", error);
         res.status(500).json({error: 'internal server error'});
     }
 }
@@ -32,10 +31,10 @@ exports.getProductDetailsById = async (req, res) => {
 exports.allOrderByProductId = async (req, res) => {
     try {
         const { productId } = req.params;
-        const products = await productModel.allOrderByProductId(productId);
-        res.json(products); 
+        const orders = await productModel.allOrderByProductId(productId);
+        res.json({ success: true, orders }); 
     } catch (error) {
-        console.error('error : fetching products by product id');
+        console.error('error : fetching products by product ID', error);
         res.status(500).json({error:'internal server error'})
     }
 }
@@ -44,7 +43,7 @@ exports.createProduct = async (req, res) => {
     try {
         const { name, price, description } = req.body;
         const result = await productModel.createProduct(name, price, description);
-        res.json(result);
+        res.status(201).json({ success: true, message: "Product created successfully", productId: result.productId });
     } catch (error) {
         console.error('error : creating product');
         res.status(500).json({error:'internal server error'});
@@ -53,10 +52,15 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
     try {
-        const { name, price, description } = req.body;
         const { productId } = req.params;
+        const { name, price, description } = req.body;
         const result = await productModel.updateProduct(productId, name, price, description);
-        res.json(result);
+        
+        if (!result) {
+            return res.status(404).json({ error: "Product not found or no changes made" });
+        }
+        
+        res.json({ success: true, message: "Product updated successfully" });
     } catch (error) { 
         console.error('error : updating product');
         res.status(500).json({error:'internal server error'});
@@ -67,9 +71,14 @@ exports.deleteProduct = async (req, res) => {
     try {
         const { productId } = req.params
         await productModel.deleteProduct(productId);
-        res.status(204).send();
+        
+        if (!result) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+        
+        res.json({ success: true, message: "Product deleted successfully" });
     } catch (error) {
-        console.error('error : deleting product');
+        console.error('error : deleting product', error);
         res.status(500).json({error:'internal server error'});
     }
 }

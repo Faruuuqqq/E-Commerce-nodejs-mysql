@@ -7,7 +7,7 @@ exports.getCheckoutPage = async (req, res) => {
           return res.status(401).json({ message: "Unauthorized - User not found" });
       }
 
-      const userId = req.user.userId;
+      const { userId } = req.user;
       const user = await userModel.getUserById(userId);
       const cartItems = await cartModel.getShoppingCart(userId);
       

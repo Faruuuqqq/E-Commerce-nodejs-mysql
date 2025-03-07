@@ -1,6 +1,6 @@
-// const productModel = require("../models/productModel");
-// const orderModel = require("../models/orderModel");
-// const userModel = require("../models/userModel");
+const productModel = require("../models/productModel");
+const orderModel = require("../models/orderModel");
+const userModel = require("../models/userModel");
 const adminModel = require("../models/adminModel");
 
 exports.getAdminDashboard = async (req, res) => {
@@ -22,11 +22,11 @@ exports.getAdminDashboard = async (req, res) => {
 
 exports.getOrdersPage = async (req, res) => {
   try {
-    const orders = await orderModel.getAllOrders;
+    const orders = await orderModel.getAllOrders();
     res.render("admin/orders", { orders });
   } catch (error) {
-    console.error("Error fetching orders:", error);
-    res.status(500).send("Error loading orders");
+      console.error("Error fetching orders:", error);
+      res.status(500).send("Error loading orders");
   }
 }
 

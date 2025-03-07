@@ -78,15 +78,14 @@ exports.logout = (req, res) => {
 // Get User Profile
 exports.getUserProfile = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const { userId, address, isAdmin } = req.user;
     const user = await userModel.getUserById(userId); // Ambil data user
     const orders = await orderModel.getPastOrdersByCustomerID(userId); // Ambil riwayat pesanan
-    const address = req.user.address;
-    console.log("address", address)
+      // console.log("address", address)
     res.render("profile", { 
       user, 
       orders,
-      isAdmin: req.user.isAdmin,
+      isAdmin,
       address
     });
   } catch (error) {

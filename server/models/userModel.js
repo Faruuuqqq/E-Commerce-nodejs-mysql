@@ -106,15 +106,14 @@ exports.changePassword = async (email, oldPassword, newPassword) => {
   }
 };
 
-exports.getUserById = async(userId) => {
+exports.getAllUsers = async () => {
   try {
     const [rows] = await pool.query(
-      'SELECT userId, email, isAdmin, fname, lname, FROM users WHERE userId = ?',
-      [userId]
+      "SELECT * FROM users",
     );
-    return rows[0] || null;
+    return rows;
   } catch (error) {
-    throw new Error("Error fetching user by ID: " + error.message);
+    throw new Error("Error fetching all user: " + error.message);
   }
 }
 

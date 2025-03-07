@@ -4,7 +4,7 @@ exports.getAllOrders = async () => {
   try {
     const query = `
       SELECT 
-        O.orderId, U.fname, U.lname, O.createdDate, O.totalPrice 
+        O.orderId, U.fname, U.lname, O.createdDate, O.totalPrice, O.status
       FROM 
         orders O 
       INNER JOIN 

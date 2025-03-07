@@ -3,12 +3,13 @@ const userModel = require("../models/userModel");
 
 exports.getShoppingCart = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const user = await userModel.getUserById(userId);
-    const address = req.body.address;
+    const { userId, isAdmin }  = req.user;
+    const { address } = req.body;
+    
+    // const user = await userModel.getUserById(userId);
     const cartItems = await cartModel.getShoppingCart(userId);
     
-    return res.render("cart", { cartItems, user, address });
+    return res.render("cart", { cartItems, user: req.user, address});
   } catch (error) {
     console.error("Error fetching shopping cart:", error.message);
     res.status(500).json({ error: "Failed to fetch shopping cart." });
@@ -19,7 +20,7 @@ exports.addToCart = async (req, res) => {
   try {
     const { quantity } = req.body;
     const { productId } = req.params;  
-    const userId = req.user.userId;
+    const { userId } = req.user;
     
     if (!productId || !quantity || isNaN(quantity) || quantity <= 0) {
       return res.status(400).json({ error: "Invalid product ID or quantity." });
@@ -51,7 +52,7 @@ exports.addToCart = async (req, res) => {
 exports.removeFromCart = async (req, res) => {
   try {
     const { productId } = req.params;
-    const userId = req.user.userId;
+    const { userId } = req.user;
 
     if (!productId) return res.status(400).json({ error: "Product ID is required." });
 
@@ -69,7 +70,7 @@ exports.removeFromCart = async (req, res) => {
 
 exports.updateCartQuantity = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const { userId } = req.user;
     const { productId } = req.params;
     const { quantity } = req.body;
 
@@ -102,7 +103,7 @@ exports.updateCartQuantity = async (req, res) => {
 
 exports.buy = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const { userId } = req.user;
     const { address } = req.body;
 
     if (!address) return res.status(400).json({ error: "Shipping address is required." });

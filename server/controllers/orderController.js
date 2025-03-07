@@ -3,8 +3,8 @@ const orderModel = require("../models/orderModel");
 exports.getAllOrders = async (req, res) => {
   try {
     const orders = await orderModel.getAllOrders();
-    // res.status(200).json(result);
-    console.log("Orders data", orders);
+        // res.status(200).json(result);
+        // console.log("Orders data", orders);
     res.render("orders", { orders });
   } catch (error) {
     console.error("Error fetching orders:", error.message);
@@ -28,13 +28,13 @@ exports.getOrderById = async (req, res) => {
 
 exports.getUserOrders = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const { userId } = req.user;
     const orders = await orderModel.getPastOrdersByCustomerID(userId);
     // console.log("User orders data:", orders); // debugging
     if (!orders) {
       return res.status(404).json({ error: "No orders found for this user." });
     }
-    res.render("orders", { orders, user: userId});
+    res.render("orders", { orders, user: req.user });
   } catch (error) {
     console.error("Error fetching order:", error.message);
     res.status(500).json({ error: "Failed to fetch order." });
