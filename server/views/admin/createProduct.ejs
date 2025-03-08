@@ -17,7 +17,7 @@
   <div class="container mt-5">
     <h2 class="text-center fw-bold text-success">Add New Product</h2>
 
-    <form id="productForm">
+    <form id="productForm" enctype="multipart/form-data">
       <div class="mb-3">
         <label for="name" class="form-label">Product Name</label>
         <input type="text" class="form-control" id="name" name="name" required>
@@ -38,6 +38,11 @@
         <input type="number" class="form-control" id="stock" name="stock" required>
       </div>
 
+      <div class="mb-3">
+        <label for="image" class="form-label">Product Image</label>
+        <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+      </div>
+
       <button type="submit" class="btn btn-success w-100">Create Product</button>
     </form>
   </div>
@@ -51,14 +56,13 @@
     event.preventDefault(); // Mencegah reload halaman
 
     // Ambil data dari form
-    const name = document.getElementById("name").value;
-    const description = document.getElementById("description").value;
-    const price = document.getElementById("price").value;
-    const stock = document.getElementById("stock").value;
+    const form = document.getElementById("productForm");
+    const formData = new FormData(form);
 
     // Konfirmasi sebelum submit
     const confirmSubmit = await Swal.fire({
       title: "Confirm Product Details",
+      icon: "question",
       html: `
         <strong>Name:</strong> ${name} <br>
         <strong>Description:</strong> ${description} <br>
@@ -79,8 +83,7 @@
     try {
       const response = await fetch("/admin/products/create", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description, price, stock })
+        body: formData,
       });
 
       const result = await response.json();
@@ -109,5 +112,4 @@
     }
   });
 </script>
-
 </html>

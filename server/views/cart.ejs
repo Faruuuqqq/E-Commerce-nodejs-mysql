@@ -5,56 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <%- include('partials/navbar') %>
 
     <div class="container mt-5">
-        <h1 class="fw-bold">Shopping Cart</h1>
-
+        <h1 class="fw-bold text-center">Your Shopping Cart</h1>
+        
         <% if (cartItems.length > 0) { %>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% cartItems.forEach(item => { %>
-                        <tr>
-                            <td><%= item.name %></td>
-                            <td>$<%= item.price %></td>
-                            <td>
-                                <input type="number" class="form-control cart-quantity" data-product-id="<%= item.productId %>" value="<%= item.quantity %>" min="1">
-                            </td>
-                            <td class="cart-total">$<%= item.price * item.quantity %></td>
-                            <td>
-                                <button class="btn btn-danger remove-from-cart" data-product-id="<%= item.productId %>">Remove</button>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-
-            <h3 class="fw-bold">Total Price: $<span id="total-cart-price">
-                <%= cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) %>
-            </span></h3>
-
-            <!-- Redirect ke halaman checkout dengan membawa user.address -->
-            <a href="/checkout" class="btn btn-success btn-lg">Checkout</a>
-
+            <div class="row">
+                <% cartItems.forEach(item => { %>
+                    <div class="col-md-6 mb-4">
+                        <div class="card p-3 shadow-sm">
+                            <div class="row g-0">
+                                <div class="col-md-4 d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/150" class="img-fluid rounded" alt="<%= item.name %>">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title fw-bold"><%= item.name %></h5>
+                                        <p class="text-muted">$<%= item.price %> each</p>
+                                        <div class="d-flex align-items-center">
+                                            <input type="number" class="form-control w-25 cart-quantity" data-product-id="<%= item.productId %>" value="<%= item.quantity %>" min="1">
+                                            <span class="ms-3 fw-bold">Total: $<span class="cart-total"><%= item.price * item.quantity %></span></span>
+                                        </div>
+                                        <button class="btn btn-danger btn-sm mt-2 remove-from-cart" data-product-id="<%= item.productId %>">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            
+            <div class="text-center mt-4">
+                <h3 class="fw-bold">Total Price: $<span id="total-cart-price">
+                    <%= cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) %>
+                </span></h3>
+                <a href="/checkout" class="btn btn-success btn-lg">Proceed to Checkout</a>
+            </div>
         <% } else { %>
-            <p class="text-muted">Your cart is empty.</p>
+            <p class="text-muted text-center mt-4">Your cart is empty.</p>
         <% } %>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Update Quantity
             document.querySelectorAll(".cart-quantity").forEach(input => {
                 input.addEventListener("change", function() {
                     let productId = this.dataset.productId;
@@ -68,32 +65,42 @@
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {
-                            location.reload();
+                            this.closest(".card").querySelector(".cart-total").innerText = "$" + (data.newTotal);
+                            document.getElementById("total-cart-price").innerText = data.totalCart;
                         }
                     })
                     .catch(err => console.error("Error updating cart:", err));
                 });
             });
 
-            // Remove Item
             document.querySelectorAll(".remove-from-cart").forEach(button => {
                 button.addEventListener("click", function() {
                     let productId = this.dataset.productId;
-
-                    fetch(`/cart/remove/${productId}`, {
-                        method: "DELETE",
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "This item will be removed from your cart!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, remove it!",
+                        cancelButtonText: "Cancel"
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            fetch(`/cart/remove/${productId}`, { method: "DELETE" })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire("Removed!", "The item has been removed from your cart.", "success");
+                                    setTimeout(() => location.reload(), 1000);
+                                }
+                            })
+                            .catch(err => console.error("Error removing from cart:", err));
                         }
-                    })
-                    .catch(err => console.error("Error removing from cart:", err));
+                    });
                 });
             });
         });
     </script>
 
+    <%- include('partials/footer') %>
 </body>
 </html>
