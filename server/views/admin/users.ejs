@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <body>
   <%- include('../partials/adminNavbar') %>
 
@@ -31,7 +33,7 @@
                         <td><%= user.email %></td>
                         <td><%= user.isAdmin ? "Admin" : "User" %></td>
                         <td>
-                            <a href="/admin/users/delete/<%= user.id %>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
+                            <button class="btn btn-danger btn-sm" onclick="deleteUser('<%= user.userId %>')">Delete</button>
                         </td>
                     </tr>
                 <% }); %>
@@ -47,4 +49,31 @@
   <%- include('../partials/footer') %>
 
 </body>
+<script>
+    async function deleteUser(userId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This action cannot be undone",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const response = await fetch(`/admin/users/delete/${userId}`, {
+                    method: "DELETE"
+                });
+                if (response.ok) {
+                    Swal.fire("Deleted!", "The user has been deleted", "success");
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    Swal.fire("Error!", "The user could not be deleted", "error");
+                }
+            }
+        });
+    }
+</script>
 </html>

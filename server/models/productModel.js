@@ -39,10 +39,10 @@ exports.getProductDetailsById = async (productId) => {
 };
 
 // Create a new product
-exports.createProduct = async (name, price, description) => {
+exports.createProduct = async (name, price, description, stock) => {
   try {
-    const query = 'INSERT INTO product (name, price, description) VALUES (?, ?, ?);';
-    const result = await executeQuery(query, [name, price, description]);
+    const query = 'INSERT INTO product (name, price, description, stock) VALUES (?, ?, ?, ?);';
+    const result = await executeQuery(query, [name, price, description, stock]);
     return { productId: result.insertId }; // Mengembalikan ID produk baru
   } catch (error) {
     console.error('Error in createProduct:', error.message);
@@ -51,10 +51,10 @@ exports.createProduct = async (name, price, description) => {
 };
 
 // Update an existing product
-exports.updateProduct = async (productId, name, price, description) => {
+exports.updateProduct = async (productId, name, price, description, stock) => {
   try {
-    const query = 'UPDATE product SET name = ?, price = ?, description = ? WHERE productId = ?;';
-    const result = await executeQuery(query, [name, price, description, productId]);
+    const query = 'UPDATE product SET name = ?, price = ?, description = ?, stock = ? WHERE productId = ?;';
+    const result = await executeQuery(query, [name, price, description, stock, productId]);
     if (result.affectedRows === 0) {
       throw new Error('Product not found or no changes made');
     }
@@ -64,6 +64,7 @@ exports.updateProduct = async (productId, name, price, description) => {
     throw error;
   }
 };
+
 
 // Delete a product by ID
 exports.deleteProduct = async (productId) => {

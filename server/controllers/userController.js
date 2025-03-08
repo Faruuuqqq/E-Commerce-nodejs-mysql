@@ -111,3 +111,21 @@ exports.updateUserProfile = async (req, res) => {
     res.status(500).json({ error: "Failed to update user profile." });
   }
 };
+
+// Delete User
+exports.deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const result = await userModel.deleteUser(userId);
+
+    if (!result) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ message: "User deleted successfully", result });
+
+  } catch (error) {
+    console.error("Error deleting user:", error.message);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+}

@@ -138,3 +138,13 @@ exports.updateUser = async (userId, newData) => {
     throw new Error("Error updating user: " + error.message);
   }
 };
+
+exports.deleteUser = async (userId) => {
+  try {
+    const query = "DELETE FROM users WHERE userId = ?";
+    const [result] = await pool.query(query, [userId]);
+    return result;
+  } catch (error) {
+    throw new Error("Error deleting user:" + error.message);
+  }
+}

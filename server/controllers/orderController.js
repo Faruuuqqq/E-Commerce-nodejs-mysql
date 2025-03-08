@@ -14,7 +14,7 @@ exports.getAllOrders = async (req, res) => {
 
 exports.getOrderById = async (req, res) => {
   try {
-    const orderId = req.params.id;
+    const { orderId } = req.params;
     const result = await orderModel.getOrderById(orderId);
     if (!result || result.length === 0) {
       return res.status(404).json({ error: "Order not found." });
@@ -43,7 +43,7 @@ exports.getUserOrders = async (req, res) => {
 
 exports.getProductsByOrder = async (req, res) => {
   try {
-    const orderId = req.params.id;
+    const { orderId } = req.params;
     const result = await orderModel.getProductsByOrder(orderId);
     if (!result || result.length === 0) {
       return res.status(404).json({ error: "No products found for this order." });
@@ -57,8 +57,13 @@ exports.getProductsByOrder = async (req, res) => {
 
 exports.updateOrder = async (req, res) => {
   try {
-    const orderId = req.params.id;
+    const { orderId } = req.params;
     const newData = req.body; // Assuming newData contains fields to be updated
+    
+    if (!newData) {
+      return res.status(400).json({ error: "No changes to be made." });
+    }
+
     const result = await orderModel.updateOrder(orderId, newData);
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Order not found or no changes made." });
@@ -84,3 +89,19 @@ exports.getPastOrdersByCustomerID = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch past orders." });
   }
 };
+
+exports.deleteOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const result = await orderModel.deleteOrder(orderId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Order not found." });
+    }
+
+    res.status(200).json({ message: "Order deleted successfully.", result });
+  } catch (error) {
+    console.error("Error deleting order:", error.message);
+    res.status(500).json({ error: "Failed to delete order." });
+  }
+}

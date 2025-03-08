@@ -11,8 +11,8 @@ module.exports = async (req, res, next) => {
       token = req.cookies.accessToken;
     }
     
-    console.log("🔹 Token dari Authorization Header:", req.headers.authorization);
-    console.log("🔹 Token dari Cookies:", req.cookies?.token);
+    // console.log("🔹 Token dari Authorization Header:", req.headers.authorization);
+    // console.log("🔹 Token dari Cookies:", req.cookies?.token);
 
     if (!token) {
       console.log("Token tidak ditemukan.");

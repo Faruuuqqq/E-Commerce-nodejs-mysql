@@ -23,7 +23,7 @@ exports.getOrderById = async (orderId) => {
   try {
     const query = `
       SELECT 
-        U.fname, U.lname, O.totalPrice, O.createdDate, O.address 
+        O.orderId, U.fname, U.lname, O.totalPrice, O.createdDate, O.address 
       FROM 
         orders O 
       INNER JOIN 
@@ -101,5 +101,15 @@ exports.getPastOrdersByCustomerID = async (userId) => {
     return result;
   } catch (error) {
     throw new Error("Error fetching past orders by customer ID: " + error.message);
+  }
+};
+
+exports.deleteOrder = async (orderId) => {
+  try {
+    const query = `DELETE FROM orders WHERE orderId = ?`;
+    const [result] = await pool.query(query, [orderId]);
+    return result;
+  } catch (error) {
+    throw new Error("Error deleting order: " + error.message);
   }
 };
