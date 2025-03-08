@@ -5,16 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        .card {
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .icon-container {
+            font-size: 2.5rem;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
     <%- include('../partials/adminNavbar') %>
 
     <div class="container mt-5">
-        <h1 class="fw-bold">Admin Dashboard</h1>
+        <h1 class="fw-bold text-center">Admin Dashboard</h1>
         
-        <div class="row">
+        <div class="row mt-4 g-4">
             <div class="col-md-4">
-                <div class="card text-center">
+                <div class="card text-center p-3">
+                    <div class="icon-container">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title">Total Products</h5>
                         <h3 class="fw-bold"><%= totalProducts %></h3>
@@ -24,7 +41,10 @@
             </div>
             
             <div class="col-md-4">
-                <div class="card text-center">
+                <div class="card text-center p-3">
+                    <div class="icon-container">
+                        <i class="bi bi-cart-check"></i>
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title">Total Orders</h5>
                         <h3 class="fw-bold"><%= totalOrders %></h3>
@@ -34,7 +54,10 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card text-center">
+                <div class="card text-center p-3">
+                    <div class="icon-container">
+                        <i class="bi bi-people"></i>
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title">Total Users</h5>
                         <h3 class="fw-bold"><%= totalUsers %></h3>

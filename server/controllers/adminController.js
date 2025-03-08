@@ -49,3 +49,46 @@ exports.getUsersPage = async (req, res) => {
       res.status(500).send("Error loading users");
   }
 }
+
+exports.getUpdateProductPage = async (req, res) => {
+  try {
+      const { productId } = req.params;
+      const product = await productModel.getProductDetailsById(productId);
+
+      if (!product) {
+          return res.status(404).json({ error: "Product not found" });
+      }
+
+      res.render("admin/updateProducts", { user: req.user, product });
+  } catch (error) {
+      console.error("Error fetching product details:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.getCreateProductPage = async (req, res) => {
+  try {
+    res.render("admin/createProduct");
+  } catch (error) {
+      console.error("Error creating product:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.getUpdateOrderPage = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const orders = await orderModel.getOrderById(orderId);
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+    
+    const order = orders[0];
+    console.log(order);
+    res.render("admin/updateOrders", { user: req.user, order });
+  } catch (error) {
+      console.error("Error fetching order details:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+}

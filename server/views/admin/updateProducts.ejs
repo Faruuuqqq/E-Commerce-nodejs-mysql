@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Product</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="/css/style.css"> -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+  <%- include('../partials/adminNavbar') %>
+
+  <div class="container mt-5">
+    <h2 class="text-center fw-bold text-primary">Edit Product</h2>
+
+    <form id="editProductForm">
+      <div class="mb-3">
+        <label for="name" class="form-label">Product Name</label>
+        <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description" required><%= product.description %></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label for="price" class="form-label">Price</label>
+        <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="stock" class="form-label">Stock</label>
+        <input type="number" class="form-control" id="stock" name="stock" value="<%= product.stock %>" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Update Product</button>
+    </form>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+</body>
+
+<script>
+  document.getElementById("editProductForm").addEventListener("submit", async function(event) {
+    event.preventDefault(); // Mencegah reload halaman
+
+    const productId = "<%= product.productId %>";  
+    const name = document.getElementById("name").value;
+    const description = document.getElementById("description").value;
+    const price = document.getElementById("price").value;
+    const stock = document.getElementById("stock").value; 
+
+    // Konfirmasi sebelum update
+    const confirmUpdate = await Swal.fire({
+      title: "Confirm Product Update",
+      html: `
+        <strong>Name:</strong> ${name} <br>
+        <strong>Description:</strong> ${description} <br>
+        <strong>Price:</strong> $${price} <br>
+        <strong>Stock:</strong> ${stock} <br>
+        <br>
+        Are you sure you want to update this product?
+      `,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, update it!",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#007bff",
+    });
+
+    if (!confirmUpdate.isConfirmed) return;
+
+    try {
+      const response = await fetch(`/admin/products/update/${productId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description, price, stock })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          title: "Success!",
+          text: "Product updated successfully.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        setTimeout(() => {
+          window.location.href = "/admin/products";
+        }, 2100);
+      } else {
+        throw new Error(result.error || "Failed to update product");
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: error.message,
+        icon: "error"
+      });
+    }
+  });
+</script>
+
+</html>

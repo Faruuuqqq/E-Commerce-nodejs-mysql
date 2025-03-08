@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Order</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="/css/style.css"> -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+  <%- include('../partials/adminNavbar') %>
+
+  <div class="container mt-5">
+    <h2 class="text-center fw-bold text-primary">Update Order</h2>
+
+    <form id="updateOrderForm">
+      <div class="mb-3">
+        <label for="orderId" class="form-label">Order ID</label>
+        <input type="text" class="form-control" id="orderId" name="orderId" value="<%= order.orderId %>" readonly>
+      </div>
+
+      <div class="mb-3">
+        <label for="customer" class="form-label">Customer Name</label>
+        <input type="text" class="form-control" id="customer" name="customer" value="<%= order.fname %> <%= order.lname %>" readonly>
+      </div>
+
+      <div class="mb-3">
+        <label for="status" class="form-label">Order Status</label>
+        <select class="form-control" id="status" name="status">
+          <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+          <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+          <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+          <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+          <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="totalPrice" class="form-label">Total Price</label>
+        <input type="text" class="form-control" id="totalPrice" name="totalPrice" value="$<%= order.totalPrice %>" readonly>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Update Order</button>
+    </form>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+</body>
+
+<script>
+  document.getElementById("updateOrderForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const orderId = document.getElementById("orderId").value;
+    const status = document.getElementById("status").value;
+
+    const confirmUpdate = await Swal.fire({
+      title: "Confirm Order Update",
+      text: `Are you sure you want to update the order status to "${status}"?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, update it!",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#007bff",
+    });
+
+    if (!confirmUpdate.isConfirmed) return;
+
+    try {
+      const response = await fetch(`/admin/orders/update/${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          title: "Success!",
+          text: "Order updated successfully.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        setTimeout(() => {
+          window.location.href = "/admin/orders"; // Redirect ke halaman order list
+        }, 2100);
+      } else {
+        throw new Error(result.error || "Failed to update order");
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: error.message,
+        icon: "error"
+      });
+    }
+  });
+</script>
+
+</html>
