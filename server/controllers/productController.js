@@ -1,3 +1,5 @@
+const path = require("path");
+const fs = require("fs");
 const productModel = require("../models/productModel");
 
 exports.getAllProducts = async (req, res) => {
@@ -45,22 +47,31 @@ exports.allOrderByProductId = async (req, res) => {
 exports.createProduct = async (req, res) => {
     try {
         const { name, price, description, stock } = req.body;
-
-        if (!name || !price || !description || !stock) {
-            return res.status(400).json({ error: "All fields are required" });
+        const image = req.file ? req.file.filename : null; 
+    
+        if (!image) {
+          return res.status(400).json({ message: "Gambar harus diunggah!" });
         }
-
-        const result = await productModel.createProduct(name, price, description, stock);
-
-        res.status(201).json({ success: true, message: "Product created successfully", productId: result.insertId });
-        // res.redirect("/admin/products?success=true");
-    } catch (error) {
-        console.error("Error creating product:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
+    
+        const newProduct = await Product.create({
+          name,
+          price,
+          description,
+          stock,
+          image,
+        });
+    
+        res.status(201).json({ message: "Produk berhasil ditambahkan!", product: newProduct });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Terjadi kesalahan saat menambahkan produk" });
+      }
 };
 
 exports.updateProduct = async (req, res) => {
+    console.log("File Uploaded:", req.file);
+console.log("Body Data:", req.body);
+
     try {
         const { productId } = req.params;
         const { name, price, description, stock } = req.body;
@@ -69,13 +80,32 @@ exports.updateProduct = async (req, res) => {
             return res.status(400).json({ error: "All fields are required" });
         }
 
-        const result = await productModel.updateProduct(productId, name, price, description, stock);
+        const product = await productModel.getProductDetailsById(productId);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found " });
+        }
+
+        let newImage = product.imageUrl;
+
+        if (req.file) {
+            newImage = req.file.filename;
+
+            if (product.image) {
+                const oldImagePath = path.join(__dirname, "..", "public", "uploads", product.imageUrl);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+        }
+
+        const result = await productModel.updateProduct(productId, name, price, description, stock, newImage);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: "Product not found or no changes made" });
         }
 
-        res.json({ success: true, message: "Product updated successfully" });
+        // res.json({ success: true, message: "Product updated successfully" });
+        res.redirect("/admin/products");
     } catch (error) {
         console.error("Error updating product:", error);
         res.status(500).json({ error: "Internal Server Error" });
