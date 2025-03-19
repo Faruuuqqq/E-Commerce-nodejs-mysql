@@ -25,7 +25,7 @@ router.get("/products/create", adminController.getCreateProductPage);
 
 // ============ route admin for order ============ 
 router.get("/orders", authenticateUser, authorizeAdmin, adminController.getOrdersPage);
-router.put("/orders/update/:orderId", orderController.updateOrder);
+router.post("/orders/update/:orderId", orderController.updateOrder);
 router.get("/orders/update/:orderId", adminController.getUpdateOrderPage);
 router.delete("/orders/delete/:orderId", orderController.deleteOrder); 
 

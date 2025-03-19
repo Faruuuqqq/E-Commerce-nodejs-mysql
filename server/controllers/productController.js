@@ -70,7 +70,7 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
     console.log("File Uploaded:", req.file);
-console.log("Body Data:", req.body);
+    console.log("Body Data:", req.body);
 
     try {
         const { productId } = req.params;
@@ -115,6 +115,13 @@ console.log("Body Data:", req.body);
 exports.deleteProduct = async (req, res) => {
     try {
         const { productId } = req.params;
+
+        const product = await productModel.getProductDetailsById(productId);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        
 
         const result = await productModel.deleteProduct(productId);
 

@@ -83,7 +83,7 @@ exports.getUserProfile = async (req, res) => {
     const orders = await orderModel.getPastOrdersByCustomerID(userId); // Ambil riwayat pesanan
       // console.log("address", address)
     res.render("profile", { 
-      user, 
+      user,
       orders,
       isAdmin,
       address

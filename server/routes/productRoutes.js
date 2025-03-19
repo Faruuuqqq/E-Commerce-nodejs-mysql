@@ -3,6 +3,7 @@ const router = express.Router();
 const productController = require("../controllers/productController");
 const authenticatedUser = require("../middleware/authenticateUser");
 const authorizeAdmin = require("../middleware/authorizeAdmin");
+const upload = require("../middleware/upload");
 
 // Route to get all products
 router.get("/", authenticatedUser, productController.getAllProducts);
@@ -21,5 +22,7 @@ router.delete("/delete/:productId", productController.deleteProduct);
 
 // Route to get all orders product details by ID
 router.get("/allOrder/:productId", authenticatedUser, productController.allOrderByProductId);
+
+router.post("/add", upload.single("image"), productController.createProduct);
 
 module.exports = router;
