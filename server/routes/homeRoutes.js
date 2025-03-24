@@ -6,8 +6,16 @@ const userModel = require("../models/userModel");
 
 router.get("/", authenticateUser, async (req, res) => {
   try {
-    const products = await productModel.getAllProducts();
-    res.render("home", { user: req.user, isAdmin: req.user.isAdmin ,products });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    
+    const { products, pagination } = await productModel.getAllProducts(page, limit);
+    res.render("home", { 
+      user: req.user, 
+      isAdmin: req.user.isAdmin,
+      products,
+      pagination
+    });
   } catch (error) {
     console.error("Error rendering homepage:", error);
     res.status(500).send("Internal Server Error");

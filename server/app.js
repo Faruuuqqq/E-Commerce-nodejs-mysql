@@ -8,7 +8,6 @@ require("dotenv").config();
 
 // Import middleware
 const authMiddleware = require("./middleware/authMiddleware");
-// const authorizeAdmin = require("./middleware/authorizeAdmin");
 
 // Import routes
 const userRoutes = require("./routes/userRoutes");
@@ -28,6 +27,7 @@ app.use(express.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true })); // Parse form data
 app.use(bodyParser.json()); // Body parser for JSON
 app.use(cookieParser());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Session middleware
 app.use(session({
