@@ -3,7 +3,7 @@ const router = express.Router();
 const productController = require("../controllers/productController");
 const authenticatedUser = require("../middleware/authenticateUser");
 const authorizeAdmin = require("../middleware/authorizeAdmin");
-const upload = require("../middleware/upload");
+const { upload, handleUploadError, optimizeImage, cleanupOldFiles } = require("../middleware/upload");
 
 // Route to get all products
 router.get("/", authenticatedUser, productController.getAllProducts);
@@ -15,7 +15,7 @@ router.get("/:productId", authenticatedUser, productController.getProductDetails
 router.post("/create", authenticatedUser, productController.createProduct);
 
 // Route to update an existing product
-router.put("/update/:productId", productController.updateProduct);
+router.post("/update/:productId", productController.updateProduct);
 
 // Route to delete a product by ID
 router.delete("/delete/:productId", productController.deleteProduct);
@@ -23,6 +23,12 @@ router.delete("/delete/:productId", productController.deleteProduct);
 // Route to get all orders product details by ID
 router.get("/allOrder/:productId", authenticatedUser, productController.allOrderByProductId);
 
-router.post("/add", upload.single("image"), productController.createProduct);
+router.post("/add", 
+    upload.single("image"),
+    handleUploadError,
+    optimizeImage,
+    cleanupOldFiles,
+    productController.createProduct
+);
 
 module.exports = router;

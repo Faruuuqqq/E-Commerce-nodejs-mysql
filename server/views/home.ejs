@@ -3,104 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/style.css">
+    <title>Home - E-Commerce</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .hero {
-            background: linear-gradient(to right, #007bff, #6610f2);
-            color: white;
-            padding: 50px 20px;
-            text-align: center;
-            border-radius: 10px;
-        }
         .product-card {
-            transition: transform 0.2s ease-in-out;
-            border-radius: 10px;
-            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
         }
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        .card-img-top {
+        .product-image {
             height: 200px;
             object-fit: cover;
         }
-        .empty-state {
-            text-align: center;
-            margin-top: 50px;
+        .category-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        .pagination {
+            margin-top: 2rem;
+        }
+        .page-link {
+            color: #0d6efd;
+        }
+        .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .product-stock {
+            font-size: 0.9rem;
             color: #6c757d;
+        }
+        .product-stock.low {
+            color: #dc3545;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
-
     <%- include('partials/navbar') %>
 
     <!-- Hero Section -->
     <div class="container mt-4">
-        <div class="hero">
-            <h1 class="fw-bold">Welcome to Our E-Commerce Store</h1>
-            <p class="fs-5">Find the best products at unbeatable prices.</p>
+        <div class="hero-section">
+            <h1 class="display-4 fw-bold mb-4">Welcome to Our E-Commerce Store</h1>
+            <p class="lead mb-0">Discover amazing products at unbeatable prices</p>
         </div>
     </div>
 
     <!-- Product List -->
-    <div class="container mt-5">
-        <h2 class="text-center fw-bold mb-4">Featured Products</h2>
-        <div class="row g-4 justify-content-center">
+    <div class="container py-5">
+        <h1 class="text-center mb-5">Featured Products</h1>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
             <% if (products.length > 0) { %>
                 <% products.forEach(product => { %>
-                    <div class="col-lg-3 col-md-4 col-sm-6">
-                        <div class="card product-card">
-                            <img src="<%= product.image || 'https://via.placeholder.com/300' %>" class="card-img-top" alt="<%= product.name %>">
-                            <div class="card-body text-center">
+                    <div class="col">
+                        <div class="card product-card h-100">
+                            <div class="position-relative">
+                                <img src="<%= product.imageUrl ? '/uploads/' + product.imageUrl : 'https://via.placeholder.com/300' %>" 
+                                     class="card-img-top product-image" 
+                                     alt="<%= product.name %>">
+                                <% if (product.categoryName) { %>
+                                    <span class="category-badge"><%= product.categoryName %></span>
+                                <% } %>
+                            </div>
+                            <div class="card-body d-flex flex-column">
                                 <h5 class="card-title"><%= product.name %></h5>
-                                <p class="card-text text-muted"><%= product.description.length > 60 ? product.description.substring(0, 60) + '...' : product.description %></p>
-                                <p class="fw-bold text-primary fs-5">$<%= product.price %></p>
-                                <div class="d-flex gap-2">
-                                    <a href="/products/<%= product.productId %>" class="btn btn-outline-primary w-100">View</a>
-                                    <!-- <button class="btn btn-primary w-50 add-to-cart" data-id="<%= product.productId %>">Add to Cart</button> -->
+                                <p class="card-text text-truncate"><%= product.description %></p>
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="product-price">$<%= product.price %></span>
+                                        <span class="product-stock <%= product.stock < 10 ? 'low' : '' %>">
+                                            <i class="fas fa-box"></i> <%= product.stock %> in stock
+                                        </span>
+                                    </div>
+                                    <a href="/products/<%= product.productId %>" 
+                                       class="btn btn-primary w-100 mt-3">
+                                        View Details
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 <% }); %>
             <% } else { %>
-                <div class="empty-state">
-                    <img src="https://via.placeholder.com/200" alt="No products" class="mb-3">
-                    <h5>No products available.</h5>
-                    <p>Check back later for more amazing products!</p>
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                        <h4 class="mb-3">No products available</h4>
+                        <p class="text-muted">Check back later for more amazing products!</p>
+                    </div>
                 </div>
             <% } %>
         </div>
+
+        <!-- Pagination -->
+        <% if (pagination && pagination.totalPages > 1) { %>
+            <nav aria-label="Product pagination" class="pagination justify-content-center">
+                <ul class="pagination">
+                    <% if (pagination.page > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/?page=<%= pagination.page - 1 %>">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                    <% } %>
+                    
+                    <% for(let i = 1; i <= pagination.totalPages; i++) { %>
+                        <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
+                            <a class="page-link" href="/?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                    
+                    <% if (pagination.page < pagination.totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/?page=<%= pagination.page + 1 %>">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        <% } %>
     </div>
 
     <%- include('partials/footer') %>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/public/js/scripts.js"></script>
-    <script>
-        document.querySelectorAll(".add-to-cart").forEach(button => {
-            button.addEventListener("click", function() {
-                const productId = this.getAttribute("data-id");
-                
-                fetch("/cart/add", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ productId, quantity: 1 })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    alert(data.message || "Product added to cart!");
-                })
-                .catch(err => console.error("Error:", err));
-            });
-        });
-    </script>
 </body>
 </html>
