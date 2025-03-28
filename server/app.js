@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // View Engine & Static Folder
-app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // =================== ROUTES =================== //
