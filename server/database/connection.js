@@ -6,11 +6,11 @@ let connectionParams;
 // Use flag to toggle between localhost and server configurations
 
         connectionParams = {
-            user: process.env.DB_SERVER_USER,
-            host: process.env.DB_SERVER_HOST,
-            password: process.env.DB_SERVER_PASSWORD,
-            database: process.env.DB_SERVER_DATABASE,
-            port: process.env.DB_SERVER_PORT,
+            user: process.env.DB_USER,
+            host: process.env.DB_HOST,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE,
+            port: process.env.DB_PORT,
         };
         console.log("Using individual database parameters");
 
