@@ -7,7 +7,7 @@ const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 require("dotenv").config();
 
-const authMiddleware = require("./middleware/authMiddleware");
+// const authMiddleware = require("./middleware/authMiddleware");
 
 // Import Routes
 const userRoutes = require("./routes/userRoutes");
