@@ -4,18 +4,7 @@ require('dotenv').config();
 let connectionParams;
 
 // Use flag to toggle between localhost and server configurations
-const useLocalhost = process.env.USE_LOCALHOST;
 
-if (useLocalhost) {
-    console.log("Using local database configuration...");
-    connectionParams = {
-        user: "root",
-        host: "localhost",
-        password: "",
-        database: "market",
-        port: 3306
-    };
-} else {
         connectionParams = {
             user: process.env.DB_SERVER_USER,
             host: process.env.DB_SERVER_HOST,
@@ -24,7 +13,7 @@ if (useLocalhost) {
             port: process.env.DB_SERVER_PORT,
         };
         console.log("Using individual database parameters");
-    }
+
 
 // Create a connection pool
 const pool = mysql.createPool({
