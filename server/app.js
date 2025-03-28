@@ -7,8 +7,6 @@ const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 require("dotenv").config();
 
-// const authMiddleware = require("./middleware/authMiddleware");
-
 // Import Routes
 const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
@@ -32,9 +30,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // View Engine & Static Folder
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
-
-// Auth Middleware (for res.locals.user)
-app.use(authMiddleware);
 
 // =================== ROUTES =================== //
 app.use("/users", userRoutes);
