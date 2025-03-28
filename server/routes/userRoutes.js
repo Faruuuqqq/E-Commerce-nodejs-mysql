@@ -3,22 +3,18 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const authenticateUser = require("../middleware/authenticateUser");
 
-// Route for user registration
+// view routes
+router.get("/register", (req, res) => res.render("auth/register"));
+router.get("/login", (req, res) => res.render("auth/login"));
+router.get("/changepassword", (req, res) => res.render("auth/changepassword"));
+
+// authentication routes
 router.post("/register", userController.register);
-router.get("/register", (req, res) => res.render('auth/register'))
-
-// Route for user login
 router.post("/login", userController.login);
-router.get("/login", (req, res) => res.render('auth/login'))
-
-// route for change user password
-router.post("/changepassword", userController.changePassword);
-router.get("/changepassword", (req, res) => res.render('auth/changepassword'))
-
-// route for user logout
 router.get("/logout", userController.logout);
+router.post("/changepassword", userController.changePassword);
 
-// route for user profile
+// user profile
 router.get("/profile", authenticateUser, userController.getUserProfile);
 router.put("/profile", authenticateUser, userController.updateUserProfile);
 
