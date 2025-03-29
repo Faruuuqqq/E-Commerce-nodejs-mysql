@@ -64,7 +64,7 @@ exports.changePassword = async (req, res) => {
 // User Logout
 exports.logout = (req, res) => {
   try {
-    res.clearCookie("accesssToken");
+    res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
     console.log("Logout successful");
     res.redirect("/users/login");
