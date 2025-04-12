@@ -1,8 +1,10 @@
 const jwt = require("jsonwebtoken");
+const path = require("path");
 require("dotenv").config();
 
 const JWT_SECRET_KEY_ACCESS_TOKEN = process.env.JWT_SECRET_KEY_ACCESS_TOKEN || "default_secret_access";
 const JWT_SECRET_KEY_REFRESH_TOKEN = process.env.JWT_SECRET_KEY_REFRESH_TOKEN || "default_secret_refresh";
+const isProduction = process.env.NODE_ENV === "production";
 
 /**
  * Generate JWT access & refresh token dan simpan di cookies
@@ -13,8 +15,8 @@ const generateTokens = (payload, res) => {
 
   // Simpan token ke cookies
   if (res) {
-    res.cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "Strict" });
-    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "Strict" });
+    res.cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "Strict", path: "/" });
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "Strict", path: "/" });
   }
 
   return { accessToken, refreshToken };

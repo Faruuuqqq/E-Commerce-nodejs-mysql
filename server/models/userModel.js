@@ -63,10 +63,12 @@ exports.login = async (email, password) => {
     const token = process.env.JWT_SECRET_KEY_ACCESS_TOKEN; // Replace with real token generation
     // const refreshToken = 'mock_refresh_token'; // Replace with real token generation
 
-    // Return the response
     return {
-      ...userData,
-      token,
+      userId: user.userId,
+      isAdmin: user.isAdmin,
+      token, 
+      // refreshToken, // Uncomment if using refresh tokens
+      message: 'Login successful',
     };
   } catch (error) {
     throw error;
