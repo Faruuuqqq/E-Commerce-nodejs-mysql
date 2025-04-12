@@ -12,9 +12,7 @@ const isDevelopment = process.env.NODE_ENV === "development";
 const generateTokens = (payload, res) => {
   const accessToken = jwt.sign(payload, JWT_SECRET_KEY_ACCESS_TOKEN, { expiresIn: "1d" });
   const refreshToken = jwt.sign(payload, JWT_SECRET_KEY_REFRESH_TOKEN, { expiresIn: "7d" });
-  console.log("Token:", token);
   console.log("Secret:", process.env.JWT_SECRET_KEY_ACCESS_TOKEN);
-
   // Simpan token ke cookies
   if (res) {
     res.cookie("accessToken", accessToken, { httpOnly: true, secure: false, sameSite: "Strict", path: "/" });
