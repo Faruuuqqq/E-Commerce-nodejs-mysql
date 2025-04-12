@@ -44,30 +44,14 @@ exports.login = async (email, password) => {
   try {
     // Fetch user data from the database
     const user = await getUserByEmail(email);
-    if (!user) {
-      throw new Error('Invalid email or password');
-    }
+    if (!user) throw new Error('Invalid email or password');
 
-    // Verify the password
     const isPasswordValid = await verifyPassword(password, user.password);
-    if (!isPasswordValid) {
-      throw new Error('Invalid email or password');
-    }
-
-    // Generate tokens (mock example; replace with your logic)
-    const userData = {
-      userId: user.userId,
-      isAdmin: user.isAdmin,
-    };
-
-    const token = process.env.JWT_SECRET_KEY_ACCESS_TOKEN; // Replace with real token generation
-    // const refreshToken = 'mock_refresh_token'; // Replace with real token generation
+    if (!isPasswordValid) throw new Error('Invalid email or password');
 
     return {
       userId: user.userId,
       isAdmin: user.isAdmin,
-      token, 
-      // refreshToken, // Uncomment if using refresh tokens
       message: 'Login successful',
     };
   } catch (error) {
