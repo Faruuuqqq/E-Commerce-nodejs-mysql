@@ -12,11 +12,13 @@ const isProduction = process.env.NODE_ENV === "production";
 const generateTokens = (payload, res) => {
   const accessToken = jwt.sign(payload, JWT_SECRET_KEY_ACCESS_TOKEN, { expiresIn: "1d" });
   const refreshToken = jwt.sign(payload, JWT_SECRET_KEY_REFRESH_TOKEN, { expiresIn: "7d" });
+  console.log("Token:", token);
+  console.log("Secret:", process.env.JWT_SECRET_KEY_ACCESS_TOKEN);
 
   // Simpan token ke cookies
   if (res) {
-    res.cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "Strict", path: "/" });
-    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "Strict", path: "/" });
+    res.cookie("accessToken", accessToken, { httpOnly: true, secure: isProduction, sameSite: "Strict", path: "/" });
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: isProduction, sameSite: "Strict", path: "/" });
   }
 
   return { accessToken, refreshToken };
