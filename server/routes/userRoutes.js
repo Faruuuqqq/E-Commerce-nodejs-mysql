@@ -6,7 +6,7 @@ const authenticateUser = require("../middleware/authenticateUser");
 // view routes
 router.get("/register", (req, res) => res.render("auth/register"));
 router.get("/login", (req, res) => res.render("auth/login"));
-router.get("/changepassword", (req, res) => res.render("auth/changepassword"));
+router.get("/changepassword", (req, res) => res.render("auth/changePassword"));
 
 // authentication routes
 router.post("/register", userController.register);
