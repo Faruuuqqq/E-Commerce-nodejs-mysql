@@ -91,7 +91,7 @@ exports.getPastOrdersByCustomerID = async (userId) => {
        GROUP_CONCAT(P.name, ' (x', PIN.quantity, ')' SEPARATOR ', ') AS products,
        SUM(PIN.totalPrice) AS totalPrice
       FROM orders O
-      INNER JOIN productsinorder PIN ON O.orderId = PIN.orderId
+      INNER JOIN productsInOrder PIN ON O.orderId = PIN.orderId
       INNER JOIN product P ON PIN.productId = P.productId
       WHERE O.userId = ?
       GROUP BY O.orderId

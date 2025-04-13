@@ -26,7 +26,7 @@ router.post("/products/create",
 );
 
 router.get("/products/update/:productId", authenticateUser, authorizeAdmin, adminController.getUpdateProductPage);
-router.post("/products/update/:productId", 
+router.put("/products/update/:productId", 
     authenticateUser, 
     authorizeAdmin, 
     upload.single("image"),
@@ -42,7 +42,7 @@ router.get("/products/:productId/orders", authenticateUser, authorizeAdmin, admi
 // Admin Order Routes
 router.get("/orders", authenticateUser, authorizeAdmin, adminController.getOrdersPage);
 router.get("/orders/update/:orderId", authenticateUser, authorizeAdmin, adminController.getUpdateOrderPage);
-router.post("/orders/update/:orderId", authenticateUser, authorizeAdmin, orderController.updateOrder);
+router.put("/orders/update/:orderId", authenticateUser, authorizeAdmin, orderController.updateOrder);
 router.delete("/orders/delete/:orderId", authenticateUser, authorizeAdmin, orderController.deleteOrder);
 
 // Admin User Routes
